@@ -153,3 +153,8 @@ curl -X POST http://localhost:8000/api/new-command \
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+
+## Contributor
+
+This projected is contributed by [Lovely Sehotra](https://github.com/LovelySehotra12). The frontend is Designed by Mentor Yash.
