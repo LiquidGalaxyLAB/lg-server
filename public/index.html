@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LG Server</title>
+    <meta name="description" content="A liquid galaxy web server">
+    <link rel="shortcut icon" href="./assets/lg.svg" type="image/x-icon">
+    <style>
+        @font-face {
+            font-family: "Product Sans";
+            src: url(./assets/ProductSans-Bold.ttf);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            position: relative;
+            display: grid;
+            block-size: 100dvh;
+            place-items: center;
+            font-family: "Product Sans", sans-serif;
+            font-weight: bold;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1 {
+            position: relative;
+            display: inline-block;
+            font-size: clamp(2rem, 2rem + 4vw, 8rem);
+            text-transform: capitalize;
+            transition: all 0.4s ease;
+            color: rgb(103, 105, 110);
+        }
+
+        h1[data-color="initial"] {
+            color: rgba(0, 0, 0, 0.87);
+        }
+
+        h1[data-color="green"] {
+            color: rgb(30, 142, 62);
+        }
+
+        h1[data-color="blue"] {
+            color: rgb(26, 115, 232);
+        }
+
+        h1[data-color="red"] {
+            color: rgb(217, 48, 37);
+        }
+
+        h1[data-color="yellow"] {
+            color: rgb(249, 171, 0);
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            h1::after {
+                position: absolute;
+                content: "";
+                block-size: 100%;
+                inline-size: 100%;
+                background-color: #ffffff;
+                inset-inline-start: 0;
+                inset-block-start: 99%;
+                z-index: 1;
+            }
+
+            h1 span.animate {
+                display: inline-block;
+                animation: slideUp 0.6s ease;
+            }
+
+            @keyframes slideUp {
+                0% {
+                    translate: 0 100%;
+                }
+
+                100% {
+                    translate: 0 0;
+                }
+            }
+
+            h1 span>span:nth-of-type(2) {
+                display: inline-block;
+                animation: move 1.2s linear infinite both;
+            }
+
+            h1 span>span:nth-of-type(3) {
+                display: inline-block;
+                animation: move 1.2s linear 0.4s infinite both;
+            }
+
+            h1 span>span:nth-of-type(4) {
+                display: inline-block;
+                animation: move 1.2s linear 0.6s infinite both;
+            }
+
+            @keyframes move {
+                0% {
+                    translate: 0 0px;
+                }
+
+                50% {
+                    translate: 0 -10px;
+                }
+
+                100% {
+                    translate: 0 0px;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1 data-color="initial">
+        <span><span>Listening</span><span>.</span><span>.</span><span>.</span></span>
+    </h1>
+    <script>
+        const colorMap = new Map([
+            ["Orbiting", "blue"],
+            ["Cleaning", "red"],
+            ["Relaunching", "yellow"],
+            ["Rebooting", "yellow"],
+            ["Stopping", "red"],
+            ["Sending", "green"],
+        ]);
+        const textMap = new Map([
+            ["/api/execute-orbit", "Orbiting"],
+            ["/api/clean-visualization", "Cleaning"],
+            ["/api/clean-logos", "Cleaning"],
+            ["/api/relaunch-lg", "Relaunching"],
+            ["/api/reboot-lg", "Rebooting"],
+            ["/api/stop-orbit", "Stopping"],
+            ["/api/clean-balloon", "Cleaning"],
+            ["/api/send-kml", "Sending"],
+        ]);
+
+        const changeText = (_text, _color) => {
+            const heading = document.querySelector("h1");
+            const animate = heading.querySelector("span");
+            const text = animate.querySelector("span");
+
+            const DEFAULT_STATE = "initial";
+            const DEFAULT_TEXT = "listening";
+
+            setTimeout(() => {
+                text.textContent = _text;
+                heading.dataset.color = _color;
+                animate.classList.add("animate");
+            }, 1000);
+
+            setTimeout(() => {
+                animate.classList.remove("animate");
+            }, 2200);
+
+            setTimeout(() => {
+                animate.classList.add("animate");
+                text.textContent = DEFAULT_TEXT;
+                heading.dataset.color = DEFAULT_STATE;
+            }, 3600);
+
+            setTimeout(() => {
+                animate.classList.remove("animate");
+            }, 4800);
+        };
+
+        const ws = new WebSocket(`ws://${window.location.host}`);
+        ws.onmessage = (event) => {
+            if (event.data) changeText(textMap.get(event.data), colorMap.get(textMap.get(event.data)));
+        };
+    </script>
+</body>
+
+</html>
