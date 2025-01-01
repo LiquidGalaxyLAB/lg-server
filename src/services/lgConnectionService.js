@@ -23,7 +23,7 @@ const executeCommand = async (client, command) => {
                console.log(
                   `Stream :: close :: code: ${code}, signal: ${signal}`
                );
-               conn.end();
+               
                resolve(output);
             })
             .on("data", (data) => {
@@ -40,7 +40,7 @@ export const executeOrbitService = async (host, sshPort, username, password, com
 
    const client = new Client();
    try {
-     
+      console.log("host", host, "sshPort", sshPort, "username", username, "password", password, "command", command);
       let port = parseInt(sshPort, 10)
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(client, command);
