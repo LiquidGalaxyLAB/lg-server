@@ -1,10 +1,10 @@
-import { cleanVisualizationService, cleanlogosService, relaunchLGService, shutdownLGService, rebootLGService, cleanBalloonService, stopOrbitService, executeOrbitService } from "../services/index.js";
+import { cleanVisualizationService, cleanlogosService, relaunchLGService, shutdownLGService, rebootLGService, cleanBalloonService, stopOrbitService, executeOrbitService, flytoService } from "../services/index.js";
 import AppError from "../utilis/error.utils.js";
 export class LgConnectionController {
     executeOrbit = async (req, res, next) => {
         const { host, sshPort, username, password } = req.body;
         try {
-            const connections = await executeOrbitService(host, sshPort, username, password, 'echo "search=Lleida" >/tmp/query.txt');
+            const connections = await executeOrbitService(host, sshPort, username, password);
             return res.status(200).json(connections);
         } catch (error) {
             console.log("error", error);
@@ -13,18 +13,18 @@ export class LgConnectionController {
 
     }
     cleanVisualization = async (req, res, next) => {
-        const { host, sshPort, username, password, command } = req.body;
+        const { host, sshPort, username, password } = req.body;
         try {
-            const response = await cleanVisualizationService(host, sshPort, username, password, command);
+            const response = await cleanVisualizationService(host, sshPort, username, password);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Clean Visualization", 500));
         }
     }
     cleanlogos = async (req, res, next) => {
-        const { host, sshPort, username, password } = req.body;
+        const { host, sshPort, username, password, numberofrigs } = req.body;
         try {
-            const response = await cleanlogosService(host, sshPort, username, password);
+            const response = await cleanlogosService(host, sshPort, username, password, numberofrigs);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Clean Logo", 500));
@@ -70,13 +70,23 @@ export class LgConnectionController {
         }
     }
     cleanBalloon = async (req, res, next) => {
-        const { host, sshPort, username, password } = req.body;
+        const { host, sshPort, username, password, numberofrigs } = req.body;
         try {
-            const response = await cleanBalloonService(host, sshPort, username, password);
+            const response = await cleanBalloonService(host, sshPort, username, password, numberofrigs);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Clean Balloon ", 500));
         }
 
+    }
+
+    flyto = async (req, res, next) => {
+        const { host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs } = req.body;
+        try {
+            const response = await flytoService(host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs);
+            return res.status(200).json(response);
+        } catch (error) {
+            return next(new AppError(error || "Failed to fly to ", 500));
+        }
     }
 }

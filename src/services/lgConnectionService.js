@@ -1,5 +1,7 @@
 import Client from "ssh2/lib/client.js";
 import AppError from "../utilis/error.utils.js";
+import { defaultRigs, leftMostRig, lookAtLinear, rightMostRig } from "../utilis/lgUtils.js";
+
 
 const connectSSH = async (client, config) => {
    return new Promise((resolve, reject) => {
@@ -36,12 +38,12 @@ const executeCommand = async (client, command) => {
    });
 }
 
-export const executeOrbitService = async (host, sshPort, username, password, command) => {
+export const executeOrbitService = async (host, sshPort, username, password) => {
 
    const client = new Client();
    try {
-      console.log("host", host, "sshPort", sshPort, "username", username, "password", password, "command", command);
-      let port = parseInt(sshPort, 10)
+      let port = parseInt(sshPort, 10);
+      const command = `echo "search=Lleida" >/tmp/query.txt`;
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(client, command);
       return result;
@@ -52,10 +54,10 @@ export const executeOrbitService = async (host, sshPort, username, password, com
       client.end();
    }
 }
+
 export const cleanVisualizationService = async (host, port, username, password) => {
    const client = new Client();
    try {
-
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(client, "> /var/www/html/kmls.txt");
       return result;
@@ -67,17 +69,16 @@ export const cleanVisualizationService = async (host, port, username, password) 
    }
 }
 
-export const cleanlogosService = async (host, sshPort, username, password) => {
-   let rigs = 4;
+export const cleanlogosService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
+   const leftmostrig = leftMostRig(numberofrigs);
    let port = parseInt(sshPort, 10)
    let blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
  <Document>
  </Document>
 </kml>`
-
    const client = new Client();
-   let command = `echo '${blank}' > /var/www/html/kml/slave_${rigs}.kml`
+   let command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostrig}.kml`
    try {
      
       await connectSSH(client, { host, port, username, password });
@@ -92,14 +93,13 @@ export const cleanlogosService = async (host, sshPort, username, password) => {
    }
 }
 
-export const relaunchLGService = async (host, sshPort, username, password, numberofrigs) => {
+export const relaunchLGService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
    let client = new Client();
    let rigs = parseInt(numberofrigs, 10);
    let port = parseInt(sshPort, 10)
 
    try {
-     
-      for (let i = rigs; i >= 1; i--) {
+      for (let i = 1; i <= rigs; i++) {
 
          await connectSSH(client, { host, port, username, password });
 
@@ -131,13 +131,13 @@ export const relaunchLGService = async (host, sshPort, username, password, numbe
       client.end();
    }
 }
-export const shutdownLGService = async (host, sshPort, username, password, numberofrigs) => {
+export const shutdownLGService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
    let client = new Client();
    let rigs = parseInt(numberofrigs, 10);
    let port = parseInt(sshPort, 10)
    try {
 
-      for (let i = rigs; i >= 1; i--) {
+      for (let i = 1; i <= rigs; i++) {
 
          await connectSSH(client, { host, port, username, password });
          const result = await executeCommand(client, `sshpass -p ${password} ssh -t lg${i} "echo ${password} | sudo -S poweroff"`);
@@ -150,13 +150,13 @@ export const shutdownLGService = async (host, sshPort, username, password, numbe
       client.end();
    }
 }
-export const rebootLGService = async (host, sshPort, username, password, numberofrigs) => {
+export const rebootLGService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
    let client = new Client();
    let rigs = parseInt(numberofrigs, 10);
    let port = parseInt(sshPort, 10);
    try {
 
-      for (let i = rigs; i >= 1; i--) {
+      for (let i = 1; i <= rigs; i++) {
 
          await connectSSH(client, { host, port, username, password });
          const result = await executeCommand(client, `sshpass -p ${password} ssh -t lg${i} "echo ${password} | sudo -S reboot"`);
@@ -183,9 +183,9 @@ export const stopOrbitService = async (host, sshPort, username, password) => {
       client.end()
    }
 }
-export const cleanBalloonService = async (host, sshPort, username, password) => {
+export const cleanBalloonService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
    let client = new Client();
-   let rigs = 3;
+   let rigs = parseInt(numberofrigs, 10);
    let port = parseInt(sshPort, 10);
    let blank = `<?xml version="1.0" encoding="UTF-8"?>
       <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -193,13 +193,28 @@ export const cleanBalloonService = async (host, sshPort, username, password) => 
         </Document>
       </kml>`
    try {
-    
-      rigs = (int.parse(rigs) / 2).floor() + 1;
+      rigs = rightMostRig(rigs);
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(client, `echo '${blank}' > /var/www/html/kml/slave_${rigs}.kml`);
       return result;
    } catch (error) {
       return next(new AppError(error||"Failed to Clean Balloon ",500));
+   } finally {
+      client.end();
+   }
+}
+
+export const flytoService = async (host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs = defaultRigs) => {
+   let client = new Client();
+   let port = parseInt(sshPort, 10);
+   const zoomValue = (591657550.500000 / Math.pow(2, 13.15393352508545));
+   const syncZoom = zoomValue / parseInt(numberofrigs,10);
+   try {
+      await connectSSH(client, { host, port, username, password });
+      const result = await executeCommand(client, `echo "flytoview=${lookAtLinear(latitude, longitude, syncZoom, tilt, bearing)}" > /tmp/query.txt`);
+      return result;
+   } catch (error) {
+      return next(new AppError(error||"Failed to fly to ",500));
    } finally {
       client.end();
    }
