@@ -1,7 +1,7 @@
 import Client from "ssh2/lib/client.js";
+import SSHClient from 'ssh2-sftp-client';
 import AppError from "../utilis/error.utils.js";
 import { defaultRigs, leftMostRig, lookAtLinear, rightMostRig } from "../utilis/lgUtils.js";
-
 
 const connectSSH = async (client, config) => {
    return new Promise((resolve, reject) => {
@@ -219,3 +219,93 @@ export const flytoService = async (host, sshPort, username, password, latitude, 
       client.end();
    }
 }
+
+export const showOverlayImageService = async (host, sshPort, username, password, numberofrigs = defaultRigs, overlayImage) => {
+   let client = new Client();
+   const leftmostrig = leftMostRig(numberofrigs);
+   let port = parseInt(sshPort, 10);
+   try {
+         await connectSSH(client, { host, port, username, password });
+         const result = await executeCommand(client, `echo '${overlayImage}' > /var/www/html/kml/slave_${leftmostrig}.kml`);
+         return result;
+   } catch (error) {
+      return next(new AppError(error||"Failed to send Logo ",500));
+   } finally {
+      client.end();
+   }
+}
+
+export const showBalloonService = async (host, sshPort, username, password, numberofrigs = defaultRigs, balloon) => {
+   let client = new Client();
+   let port = parseInt(sshPort, 10);
+   const rightmostrig = rightMostRig(numberofrigs);
+   try {
+      await connectSSH(client, { host, port, username, password });
+      const result = await executeCommand(client, `echo '${balloon}' > /var/www/html/kml/slave_${rightmostrig}.kml`);
+      return result;
+   } catch (error) {
+      return next(new AppError(error||"Failed to send Balloon ",500));
+   } finally {
+      client.end();
+   }
+}
+
+export const sendKmlService = async (host, sshPort, username, password, projectname, localPath) => {
+   const sftp = new SSHClient();
+   const client = new Client();
+   const remoteKmlPath = `/var/www/html/${projectname}.kml`;
+   const remoteKmlListPath = `/var/www/html/kmls.txt`;
+   const flytoQueryPath = `/tmp/query.txt`;
+
+   try {
+       // Connect to the SFTP server
+       await sftp.connect({ host, port: sshPort, username, password });
+
+       // Upload the KML file
+       await sftp.put(localPath, remoteKmlPath);
+
+       // Connect to the SSH server
+       await new Promise((resolve, reject) => {
+           client.on('ready', resolve).on('error', reject).connect({ host, port: sshPort, username, password });
+       });
+
+       // Execute the command to update the KML list
+       await new Promise((resolve, reject) => {
+           client.exec(`echo "http://lg1:81/${projectname}.kml" > ${remoteKmlListPath}`, (err, stream) => {
+               if (err) return reject(err);
+               stream.on('close', (code, signal) => {
+                   if (code === 0) resolve();
+                   else reject(new AppError(`Command failed with code ${code}`, 500));
+               }).on('data', (data) => {
+                   console.log(data.toString());
+               }).stderr.on('data', (data) => {
+                   console.error(data.toString());
+               });
+           });
+       });
+
+       //Use LookAt so that you can see the kml 
+      // Execute the command to update the flyto query
+      //  await new Promise((resolve, reject) => {
+      //      client.exec(`echo "flytoview=${lookAtLinear("28.7041", "77.1025", 2000, 60, 0)}" > /tmp/query.txt`, (err, stream) => {
+      //          if (err) return reject(err);
+      //          stream.on('close', (code, signal) => {
+      //              if (code === 0) resolve();
+      //              else reject(new AppError(`Command failed with code ${code}`, 500));
+      //          }).on('data', (data) => {
+      //              console.log(data.toString());
+      //          }).stderr.on('data', (data) => {
+      //              console.error(data.toString());
+      //          });
+      //      });
+      //  });
+
+       return { message: "KML file sent and commands executed successfully" };
+   } catch (error) {
+       throw new AppError(error || "Failed to send KML", 500);
+   } finally {
+       sftp.end();
+       client.end();
+   }
+}
+
