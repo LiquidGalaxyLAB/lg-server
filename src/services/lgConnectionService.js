@@ -1,8 +1,9 @@
 import Client from "ssh2/lib/client.js";
 import SSHClient from 'ssh2-sftp-client';
-import AppError from "../utilis/error.utils.js";
-import { defaultRigs, leftMostRig, lookAtLinear, rightMostRig } from "../utilis/lgUtils.js";
-import AppSuccess from "../utilis/success.utils.js";
+import AppError from "../utils/error.utils.js";
+import { defaultRigs, leftMostRig, rightMostRig } from "../utils/rigs.utils.js";
+import { lookAtLinear } from "../utils/lookat.utils.js";
+import AppSuccess from "../utils/success.utils.js";
 const connectSSH = async (client, config) => {
    return new Promise((resolve, reject) => {
       client
@@ -283,7 +284,7 @@ export const sendKmlService = async (host, sshPort, username, password, projectn
            });
        });
 
-       //Use LookAt so that you can see the kml
+      // Use LookAt so that you can see the kml
       // Execute the command to update the flyto query
       //  await new Promise((resolve, reject) => {
       //      client.exec(`echo "flytoview=${lookAtLinear("28.7041", "77.1025", 2000, 60, 0)}" > /tmp/query.txt`, (err, stream) => {

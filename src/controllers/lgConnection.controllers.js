@@ -1,5 +1,5 @@
 import { cleanVisualizationService, cleanlogosService, relaunchLGService, shutdownLGService, rebootLGService, cleanBalloonService, stopOrbitService, executeOrbitService, flytoService, showOverlayImageService, showBalloonService, sendKmlService } from "../services/index.js";
-import AppError from "../utilis/error.utils.js";
+import AppError from "../utils/error.utils.js";
 import path from 'path';
 export class LgConnectionController {
     executeOrbit = async (req, res, next) => {
@@ -110,10 +110,7 @@ export class LgConnectionController {
             return next(new AppError(error || "Failed to show balloon ", 500));
         }
     }
-
     
-
-
     sendKml = async (req, res, next) => {
         const { ip, port, username, password, filename } = req.body;
     
