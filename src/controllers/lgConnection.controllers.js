@@ -3,9 +3,9 @@ import AppError from "../utilis/error.utils.js";
 import path from 'path';
 export class LgConnectionController {
     executeOrbit = async (req, res, next) => {
-        const { host, sshPort, username, password } = req.body;
+        const { ip, port, username, password } = req.body;
         try {
-            const connections = await executeOrbitService(host, sshPort, username, password);
+            const connections = await executeOrbitService(ip, port, username, password);
             return res.status(200).json(connections);
         } catch (error) {
             console.log("error", error);
@@ -14,27 +14,27 @@ export class LgConnectionController {
 
     }
     cleanVisualization = async (req, res, next) => {
-        const { host, sshPort, username, password } = req.body;
+        const { ip, port, username, password } = req.body;
         try {
-            const response = await cleanVisualizationService(host, sshPort, username, password);
+            const response = await cleanVisualizationService(ip, port, username, password);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Clean Visualization", 500));
         }
     }
     cleanlogos = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs } = req.body;
+        const { ip, port, username, password, rigs } = req.body;
         try {
-            const response = await cleanlogosService(host, sshPort, username, password, numberofrigs);
+            const response = await cleanlogosService(ip, port, username, password, rigs);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Clean Logo", 500));
         }
     }
     relaunchLG = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs } = req.body;
+        const { ip, port, username, password, rigs } = req.body;
         try {
-            const response = await relaunchLGService(host, sshPort, username, password, numberofrigs);
+            const response = await relaunchLGService(ip, port, username, password, rigs);
             return res.status(200).json(response);
 
         } catch (error) {
@@ -42,9 +42,9 @@ export class LgConnectionController {
         }
     }
     shutdownLG = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs } = req.body;
+        const { ip, port, username, password, rigs } = req.body;
         try {
-            const response = await shutdownLGService(host, sshPort, username, password, numberofrigs);
+            const response = await shutdownLGService(ip, port, username, password, rigs);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Shutdown LG ", 500));
@@ -52,9 +52,9 @@ export class LgConnectionController {
 
     }
     rebootLG = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs } = req.body;
+        const { ip, port, username, password, rigs } = req.body;
         try {
-            const response = await rebootLGService(host, sshPort, username, password, numberofrigs);
+            const response = await rebootLGService(ip, port, username, password, rigs);
             return res.status(200).json(response);
 
         } catch (error) {
@@ -62,18 +62,18 @@ export class LgConnectionController {
         }
     }
     stopOrbit = async (req, res, next) => {
-        const { host, sshPort, username, password } = req.body;
+        const { ip, port, username, password } = req.body;
         try {
-            const response = await stopOrbitService(host, sshPort, username, password);
+            const response = await stopOrbitService(ip, port, username, password);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Stop Orbit ", 500));
         }
     }
     cleanBalloon = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs } = req.body;
+        const { ip, port, username, password, rigs } = req.body;
         try {
-            const response = await cleanBalloonService(host, sshPort, username, password, numberofrigs);
+            const response = await cleanBalloonService(ip, port, username, password, rigs);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to Clean Balloon ", 500));
@@ -82,9 +82,9 @@ export class LgConnectionController {
     }
 
     flyto = async (req, res, next) => {
-        const { host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs } = req.body;
+        const { ip, port, username, password, latitude, longitude, tilt, bearing, rigs } = req.body;
         try {
-            const response = await flytoService(host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs);
+            const response = await flytoService(ip, port, username, password, latitude, longitude, tilt, bearing, rigs);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to fly to ", 500));
@@ -92,9 +92,9 @@ export class LgConnectionController {
     }
 
     showOverlayImage = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs, imageKml } = req.body;
+        const { ip, port, username, password, rigs, kml } = req.body;
         try {
-            const response = await showOverlayImageService(host, sshPort, username, password, numberofrigs, imageKml);
+            const response = await showOverlayImageService(ip, port, username, password, rigs, kml);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to show overlay image ", 500));
@@ -102,9 +102,9 @@ export class LgConnectionController {
     }
 
     showBallon = async (req, res, next) => {
-        const { host, sshPort, username, password, numberofrigs, balloonKml } = req.body;
+        const { ip, port, username, password, rigs, kml } = req.body;
         try {
-            const response = await showBalloonService(host, sshPort, username, password, numberofrigs, balloonKml);
+            const response = await showBalloonService(ip, port, username, password, rigs, kml);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to show balloon ", 500));
@@ -115,7 +115,7 @@ export class LgConnectionController {
 
 
     sendKml = async (req, res, next) => {
-        const { host, sshPort, username, password, projectname } = req.body;
+        const { ip, port, username, password, filename } = req.body;
     
         // Access the uploaded file
         const uploadedFile = req.file;
@@ -130,11 +130,11 @@ export class LgConnectionController {
     
             // Call the service function
             const response = await sendKmlService(
-                host,
-                sshPort,
+                ip,
+                port,
                 username,
                 password,
-                projectname,
+                filename,
                 localPath
             );
     

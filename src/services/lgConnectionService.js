@@ -38,13 +38,13 @@ const executeCommand = async (client, command) => {
    });
 }
 
-export const executeOrbitService = async (host, sshPort, username, password) => {
+export const executeOrbitService = async (ip, port, username, password) => {
 
    const client = new Client();
    try {
-      let port = parseInt(sshPort, 10);
+      let port = parseInt(port, 10);
       const command = `echo "search=Lleida" >/tmp/query.txt`;
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { ip, port, username, password });
       const result = await executeCommand(client, command);
       return new AppSuccess("Orbit executed successfully",200, result);
    } catch (error) {
@@ -55,10 +55,10 @@ export const executeOrbitService = async (host, sshPort, username, password) => 
    }
 }
 
-export const cleanVisualizationService = async (host, port, username, password) => {
+export const cleanVisualizationService = async (ip, port, username, password) => {
    const client = new Client();
    try {
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { ip, port, username, password });
       const result = await executeCommand(client, "> /var/www/html/kmls.txt");
       return new AppSuccess("Visualization cleaned successfully",200, result);
    } catch (error) {
@@ -69,9 +69,9 @@ export const cleanVisualizationService = async (host, port, username, password) 
    }
 }
 
-export const cleanlogosService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
-   const leftmostrig = leftMostRig(numberofrigs);
-   let port = parseInt(sshPort, 10)
+export const cleanlogosService = async (ip, port, username, password, rigs = defaultRigs) => {
+   const leftmostrig = leftMostRig(rigs);
+   let port = parseInt(port, 10)
    let blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
  <Document>
@@ -81,7 +81,7 @@ export const cleanlogosService = async (host, sshPort, username, password, numbe
    let command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostrig}.kml`
    try {
      
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { ip, port, username, password });
       const result = await executeCommand(client, command);
       return new AppSuccess("Logo cleaned successfully",200, result);
 
@@ -93,15 +93,15 @@ export const cleanlogosService = async (host, sshPort, username, password, numbe
    }
 }
 
-export const relaunchLGService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
+export const relaunchLGService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(numberofrigs, 10);
-   let port = parseInt(sshPort, 10)
+   let rigs = parseInt(rigs, 10);
+   let port = parseInt(port, 10)
 
    try {
       for (let i = 1; i <= rigs; i++) {
 
-         await connectSSH(client, { host, port, username, password });
+         await connectSSH(client, { ip, port, username, password });
 
          const relaunchCommand = `
             RELAUNCH_CMD="\\
@@ -124,6 +124,7 @@ export const relaunchLGService = async (host, sshPort, username, password, numbe
          // client.end();
          return new AppSuccess("LG Relaunched successfully",200, result);
       }
+      
    } catch (error) {
       throw (new AppError(error||"Failed to Re-launch LG ",500));
    }
@@ -131,15 +132,15 @@ export const relaunchLGService = async (host, sshPort, username, password, numbe
       client.end();
    }
 }
-export const shutdownLGService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
+export const shutdownLGService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(numberofrigs, 10);
-   let port = parseInt(sshPort, 10)
+   let rigs = parseInt(rigs, 10);
+   let port = parseInt(port, 10)
    try {
 
       for (let i = 1; i <= rigs; i++) {
 
-         await connectSSH(client, { host, port, username, password });
+         await connectSSH(client, { ip, port, username, password });
          const result = await executeCommand(client, `sshpass -p ${password} ssh -t lg${i} "echo ${password} | sudo -S poweroff"`);
 
          return new AppSuccess("LG Shutdown successfully",200, result);
@@ -150,15 +151,15 @@ export const shutdownLGService = async (host, sshPort, username, password, numbe
       client.end();
    }
 }
-export const rebootLGService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
+export const rebootLGService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(numberofrigs, 10);
-   let port = parseInt(sshPort, 10);
+   let rigs = parseInt(rigs, 10);
+   let port = parseInt(port, 10);
    try {
 
       for (let i = 1; i <= rigs; i++) {
 
-         await connectSSH(client, { host, port, username, password });
+         await connectSSH(client, { ip, port, username, password });
          const result = await executeCommand(client, `sshpass -p ${password} ssh -t lg${i} "echo ${password} | sudo -S reboot"`);
 
          return new AppSuccess("LG Rebooted successfully",200, result);
@@ -169,12 +170,12 @@ export const rebootLGService = async (host, sshPort, username, password, numbero
       client.end();
    }
 }
-export const stopOrbitService = async (host, sshPort, username, password) => {
+export const stopOrbitService = async (ip, port, username, password) => {
    let client = new Client();
-   let port = parseInt(sshPort, 10);
+   let port = parseInt(port, 10);
    try {
      
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { ip, port, username, password });
       const result = await executeCommand(client, `echo "exittour=true" > /tmp/query.txt`);
       return new AppSuccess("Orbit Stopped successfully",200, result);
    } catch (error) {
@@ -183,10 +184,10 @@ export const stopOrbitService = async (host, sshPort, username, password) => {
       client.end()
    }
 }
-export const cleanBalloonService = async (host, sshPort, username, password, numberofrigs = defaultRigs) => {
+export const cleanBalloonService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(numberofrigs, 10);
-   let port = parseInt(sshPort, 10);
+   let rigs = parseInt(rigs, 10);
+   let port = parseInt(port, 10);
    let blank = `<?xml version="1.0" encoding="UTF-8"?>
       <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
         <Document>
@@ -194,7 +195,7 @@ export const cleanBalloonService = async (host, sshPort, username, password, num
       </kml>`
    try {
       rigs = rightMostRig(rigs);
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { ip, port, username, password });
       const result = await executeCommand(client, `echo '${blank}' > /var/www/html/kml/slave_${rigs}.kml`);
       return new AppSuccess("Balloon cleaned successfully",200, result);
    } catch (error) {
@@ -204,13 +205,13 @@ export const cleanBalloonService = async (host, sshPort, username, password, num
    }
 }
 
-export const flytoService = async (host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs = defaultRigs) => {
+export const flytoService = async (ip, port, username, password, latitude, longitude, tilt, bearing, rigs = defaultRigs) => {
    let client = new Client();
-   let port = parseInt(sshPort, 10);
+   let port = parseInt(port, 10);
    const zoomValue = (591657550.500000 / Math.pow(2, 13.15393352508545));
-   const syncZoom = zoomValue / parseInt(numberofrigs,10);
+   const syncZoom = zoomValue / parseInt(rigs,10);
    try {
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { ip, port, username, password });
       const result = await executeCommand(client, `echo "flytoview=${lookAtLinear(latitude, longitude, syncZoom, tilt, bearing)}" > /tmp/query.txt`);
       return new AppSuccess("Flyto executed successfully",200, result);
    } catch (error) {
@@ -220,13 +221,13 @@ export const flytoService = async (host, sshPort, username, password, latitude, 
    }
 }
 
-export const showOverlayImageService = async (host, sshPort, username, password, numberofrigs = defaultRigs, overlayImage) => {
+export const showOverlayImageService = async (ip, port, username, password, rigs = defaultRigs, kml) => {
    let client = new Client();
-   const leftmostrig = leftMostRig(numberofrigs);
-   let port = parseInt(sshPort, 10);
+   const leftmostrig = leftMostRig(rigs);
+   let port = parseInt(port, 10);
    try {
-         await connectSSH(client, { host, port, username, password });
-         const result = await executeCommand(client, `echo '${overlayImage}' > /var/www/html/kml/slave_${leftmostrig}.kml`);
+         await connectSSH(client, { ip, port, username, password });
+         const result = await executeCommand(client, `echo '${kml}' > /var/www/html/kml/slave_${leftmostrig}.kml`);
          return new AppSuccess("Logo sent successfully",200, result);
    } catch (error) {
       throw (new AppError(error||"Failed to send Logo ",500));
@@ -235,13 +236,13 @@ export const showOverlayImageService = async (host, sshPort, username, password,
    }
 }
 
-export const showBalloonService = async (host, sshPort, username, password, numberofrigs = defaultRigs, balloon) => {
+export const showBalloonService = async (ip, port, username, password, rigs = defaultRigs, kml) => {
    let client = new Client();
-   let port = parseInt(sshPort, 10);
-   const rightmostrig = rightMostRig(numberofrigs);
+   let port = parseInt(port, 10);
+   const rightmostrig = rightMostRig(rigs);
    try {
-      await connectSSH(client, { host, port, username, password });
-      const result = await executeCommand(client, `echo '${balloon}' > /var/www/html/kml/slave_${rightmostrig}.kml`);
+      await connectSSH(client, { ip, port, username, password });
+      const result = await executeCommand(client, `echo '${kml}' > /var/www/html/kml/slave_${rightmostrig}.kml`);
       return new AppSuccess("Balloon sent successfully",200, result);
    } catch (error) {
       throw (new AppError(error||"Failed to send Balloon ",500));
@@ -250,27 +251,27 @@ export const showBalloonService = async (host, sshPort, username, password, numb
    }
 }
 
-export const sendKmlService = async (host, sshPort, username, password, projectname, localPath) => {
+export const sendKmlService = async (ip, port, username, password, filename, localPath) => {
    const sftp = new SSHClient();
    const client = new Client();
-   const remoteKmlPath = `/var/www/html/${projectname}.kml`;
+   const remoteKmlPath = `/var/www/html/${filename}.kml`;
    const remoteKmlListPath = `/var/www/html/kmls.txt`;
 
    try {
        // Connect to the SFTP server
-       await sftp.connect({ host, port: sshPort, username, password });
+       await sftp.connect({ ip, port: port, username, password });
 
        // Upload the KML file
        await sftp.put(localPath, remoteKmlPath);
 
        // Connect to the SSH server
        await new Promise((resolve, reject) => {
-           client.on('ready', resolve).on('error', reject).connect({ host, port: sshPort, username, password });
+           client.on('ready', resolve).on('error', reject).connect({ ip, port: port, username, password });
        });
 
        // Execute the command to update the KML list
        await new Promise((resolve, reject) => {
-           client.exec(`echo "http://lg1:81/${projectname}.kml" > ${remoteKmlListPath}`, (err, stream) => {
+           client.exec(`echo "http://lg1:81/${filename}.kml" > ${remoteKmlListPath}`, (err, stream) => {
                if (err) return reject(err);
                stream.on('close', (code, signal) => {
                    if (code === 0) resolve();
