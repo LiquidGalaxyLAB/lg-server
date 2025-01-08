@@ -157,4 +157,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contributor
 
-This projected is contributed by [Lovely Sehotra](https://github.com/LovelySehotra12). The frontend is Designed by Mentor Yash.
+This projected is contributed by <br></br>
+<a href="https://github.com/LiquidGalaxyLAB/lg-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server" />
+</a>
+<a href="https://github.com/LovelySehotra12/Swiper-Carousel/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=LovelySehotra12/Swiper-Carousel" />
+</a>
+
+The frontend is Designed by Mentor Yash.
