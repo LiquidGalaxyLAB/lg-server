@@ -71,7 +71,7 @@ export const cleanVisualizationService = async (ip, port, username, password) =>
 
 export const cleanlogosService = async (ip, port, username, password, rigs = defaultRigs) => {
    const leftmostrig = leftMostRig(rigs);
-   let port = parseInt(port, 10)
+   let parsedPort = parseInt(port, 10)
    let blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
  <Document>
@@ -81,7 +81,7 @@ export const cleanlogosService = async (ip, port, username, password, rigs = def
    let command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostrig}.kml`
    try {
      
-      await connectSSH(client, { ip, port, username, password });
+      await connectSSH(client, { ip, parsedPort, username, password });
       const result = await executeCommand(client, command);
       return new AppSuccess("Logo cleaned successfully",200, result);
 
@@ -95,13 +95,13 @@ export const cleanlogosService = async (ip, port, username, password, rigs = def
 
 export const relaunchLGService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(rigs, 10);
-   let port = parseInt(port, 10)
+   let numberofrigs = parseInt(rigs, 10);
+   let parsedPort = parseInt(port, 10)
 
    try {
-      for (let i = 1; i <= rigs; i++) {
+      for (let i = 1; i <= numberofrigs; i++) {
 
-         await connectSSH(client, { ip, port, username, password });
+         await connectSSH(client, { ip, parsedPort, username, password });
 
          const relaunchCommand = `
             RELAUNCH_CMD="\\
@@ -134,13 +134,13 @@ export const relaunchLGService = async (ip, port, username, password, rigs = def
 }
 export const shutdownLGService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(rigs, 10);
-   let port = parseInt(port, 10)
+   let numberofrigs = parseInt(rigs, 10);
+   let sshPort = parseInt(port, 10)
    try {
 
-      for (let i = 1; i <= rigs; i++) {
+      for (let i = 1; i <= numberofrigs; i++) {
 
-         await connectSSH(client, { ip, port, username, password });
+         await connectSSH(client, { ip, sshPort, username, password });
          const result = await executeCommand(client, `sshpass -p ${password} ssh -t lg${i} "echo ${password} | sudo -S poweroff"`);
 
          return new AppSuccess("LG Shutdown successfully",200, result);
@@ -153,13 +153,13 @@ export const shutdownLGService = async (ip, port, username, password, rigs = def
 }
 export const rebootLGService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(rigs, 10);
-   let port = parseInt(port, 10);
+   let numberofrigs = parseInt(rigs, 10);
+   let sshPort = parseInt(port, 10);
    try {
 
-      for (let i = 1; i <= rigs; i++) {
+      for (let i = 1; i <= numberofrigs; i++) {
 
-         await connectSSH(client, { ip, port, username, password });
+         await connectSSH(client, { ip, sshPort, username, password });
          const result = await executeCommand(client, `sshpass -p ${password} ssh -t lg${i} "echo ${password} | sudo -S reboot"`);
 
          return new AppSuccess("LG Rebooted successfully",200, result);
@@ -172,10 +172,10 @@ export const rebootLGService = async (ip, port, username, password, rigs = defau
 }
 export const stopOrbitService = async (ip, port, username, password) => {
    let client = new Client();
-   let port = parseInt(port, 10);
+   let sshPort = parseInt(port, 10);
    try {
      
-      await connectSSH(client, { ip, port, username, password });
+      await connectSSH(client, { ip, sshPort, username, password });
       const result = await executeCommand(client, `echo "exittour=true" > /tmp/query.txt`);
       return new AppSuccess("Orbit Stopped successfully",200, result);
    } catch (error) {
@@ -186,17 +186,17 @@ export const stopOrbitService = async (ip, port, username, password) => {
 }
 export const cleanBalloonService = async (ip, port, username, password, rigs = defaultRigs) => {
    let client = new Client();
-   let rigs = parseInt(rigs, 10);
-   let port = parseInt(port, 10);
+   let numberofrigs = parseInt(rigs, 10);
+   let sshPort = parseInt(port, 10);
    let blank = `<?xml version="1.0" encoding="UTF-8"?>
       <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
         <Document>
         </Document>
       </kml>`
    try {
-      rigs = rightMostRig(rigs);
-      await connectSSH(client, { ip, port, username, password });
-      const result = await executeCommand(client, `echo '${blank}' > /var/www/html/kml/slave_${rigs}.kml`);
+      rigs = rightMostRig(numberofrigs);
+      await connectSSH(client, { ip, sshPort, username, password });
+      const result = await executeCommand(client, `echo '${blank}' > /var/www/html/kml/slave_${numberofrigs}.kml`);
       return new AppSuccess("Balloon cleaned successfully",200, result);
    } catch (error) {
      throw (new AppError(error||"Failed to Clean Balloon ",500));
@@ -207,11 +207,11 @@ export const cleanBalloonService = async (ip, port, username, password, rigs = d
 
 export const flytoService = async (ip, port, username, password, latitude, longitude, tilt, bearing, rigs = defaultRigs) => {
    let client = new Client();
-   let port = parseInt(port, 10);
+   let sshPort = parseInt(port, 10);
    const zoomValue = (591657550.500000 / Math.pow(2, 13.15393352508545));
    const syncZoom = zoomValue / parseInt(rigs,10);
    try {
-      await connectSSH(client, { ip, port, username, password });
+      await connectSSH(client, { ip, sshPort, username, password });
       const result = await executeCommand(client, `echo "flytoview=${lookAtLinear(latitude, longitude, syncZoom, tilt, bearing)}" > /tmp/query.txt`);
       return new AppSuccess("Flyto executed successfully",200, result);
    } catch (error) {
@@ -224,9 +224,9 @@ export const flytoService = async (ip, port, username, password, latitude, longi
 export const showOverlayImageService = async (ip, port, username, password, rigs = defaultRigs, kml) => {
    let client = new Client();
    const leftmostrig = leftMostRig(rigs);
-   let port = parseInt(port, 10);
+   let sshPort = parseInt(port, 10);
    try {
-         await connectSSH(client, { ip, port, username, password });
+         await connectSSH(client, { ip, sshPort, username, password });
          const result = await executeCommand(client, `echo '${kml}' > /var/www/html/kml/slave_${leftmostrig}.kml`);
          return new AppSuccess("Logo sent successfully",200, result);
    } catch (error) {
@@ -238,10 +238,10 @@ export const showOverlayImageService = async (ip, port, username, password, rigs
 
 export const showBalloonService = async (ip, port, username, password, rigs = defaultRigs, kml) => {
    let client = new Client();
-   let port = parseInt(port, 10);
+   let sshPort = parseInt(port, 10);
    const rightmostrig = rightMostRig(rigs);
    try {
-      await connectSSH(client, { ip, port, username, password });
+      await connectSSH(client, { ip, sshPort, username, password });
       const result = await executeCommand(client, `echo '${kml}' > /var/www/html/kml/slave_${rightmostrig}.kml`);
       return new AppSuccess("Balloon sent successfully",200, result);
    } catch (error) {
