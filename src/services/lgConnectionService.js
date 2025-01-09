@@ -13,6 +13,18 @@ const connectSSH = async (client, config) => {
    });
 }
 
+export const connectToLg = async (host, sshPort, username, password) => {
+   const client = new Client();
+   try {
+      await connectSSH(client, { host, sshPort, username, password });
+      return new AppSuccess("Connected to LG", 200, null);
+   } catch (error) {
+      throw new AppError("Failed to connect to LG", 500);
+   } finally {
+      client.end();
+   }
+}
+
 const executeCommand = async (client, command) => {
    return new Promise((resolve, reject) => {
       client.exec(command, (err, stream) => {
@@ -40,16 +52,16 @@ const executeCommand = async (client, command) => {
 }
 
 export const executeOrbitService = async (host, sshPort, username, password) => {
-
+   
    const client = new Client();
    try {
       let port = parseInt(sshPort, 10);
-      const command = `echo "search=Lleida" >/tmp/query.txt`;
+      const command = 'echo "playtour=Orbit" > /tmp/query.txt';
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(client, command);
       return new AppSuccess("Orbit executed successfully",200, result);
    } catch (error) {
-   throw (new AppError(error || "Failed to execute orbit", 500));
+   throw (new AppError( "Failed to execute orbit", 500));
    }
    finally {
       client.end();
@@ -63,7 +75,7 @@ export const cleanVisualizationService = async (host, port, username, password) 
       const result = await executeCommand(client, "> /var/www/html/kmls.txt");
       return new AppSuccess("Visualization cleaned successfully",200, result);
    } catch (error) {
-      throw new AppError(error||"Failed to Clean Visualization",500);
+      throw new AppError("Failed to Clean Visualization",500);
    }
    finally {
       client.end();
@@ -87,7 +99,7 @@ export const cleanlogosService = async (host, sshPort, username, password, numbe
       return new AppSuccess("Logo cleaned successfully",200, result);
 
    } catch (error) {
-      throw (new AppError(error||"Failed to Clean Logo",500));
+      throw (new AppError("Failed to Clean Logo",500));
    }
    finally {
       client.end();
@@ -126,7 +138,7 @@ export const relaunchLGService = async (host, sshPort, username, password, numbe
          return new AppSuccess("LG Relaunched successfully",200, result);
       }
    } catch (error) {
-      throw (new AppError(error||"Failed to Re-launch LG ",500));
+      throw (new AppError("Failed to Re-launch LG ",500));
    }
    finally {
       client.end();
@@ -146,7 +158,7 @@ export const shutdownLGService = async (host, sshPort, username, password, numbe
          return new AppSuccess("LG Shutdown successfully",200, result);
       }
    } catch (error) {
-      throw (new AppError(error||"Failed to Shutdown LG ",500));
+      throw (new AppError("Failed to Shutdown LG ",500));
    } finally {
       client.end();
    }
@@ -165,7 +177,7 @@ export const rebootLGService = async (host, sshPort, username, password, numbero
          return new AppSuccess("LG Rebooted successfully",200, result);
       }
    } catch (error) {
-      throw (new AppError(error||"Failed to reboot LG",500));
+      throw (new AppError("Failed to reboot LG",500));
    } finally {
       client.end();
    }
@@ -179,7 +191,7 @@ export const stopOrbitService = async (host, sshPort, username, password) => {
       const result = await executeCommand(client, `echo "exittour=true" > /tmp/query.txt`);
       return new AppSuccess("Orbit Stopped successfully",200, result);
    } catch (error) {
-      throw (new AppError(error||"Failed to Stop Orbit ",500));
+      throw (new AppError("Failed to Stop Orbit ",500));
    } finally {
       client.end()
    }
@@ -199,7 +211,7 @@ export const cleanBalloonService = async (host, sshPort, username, password, num
       const result = await executeCommand(client, `echo '${blank}' > /var/www/html/kml/slave_${rigs}.kml`);
       return new AppSuccess("Balloon cleaned successfully",200, result);
    } catch (error) {
-     throw (new AppError(error||"Failed to Clean Balloon ",500));
+     throw (new AppError("Failed to Clean Balloon ",500));
    } finally {
       client.end();
    }
@@ -215,7 +227,7 @@ export const flytoService = async (host, sshPort, username, password, latitude, 
       const result = await executeCommand(client, `echo "flytoview=${lookAtLinear(latitude, longitude, syncZoom, tilt, bearing)}" > /tmp/query.txt`);
       return new AppSuccess("Flyto executed successfully",200, result);
    } catch (error) {
-     throw (new AppError(error||"Failed to fly to ",500));
+     throw (new AppError("Failed to fly to ",500));
    } finally {
       client.end();
    }
@@ -230,7 +242,7 @@ export const showOverlayImageService = async (host, sshPort, username, password,
          const result = await executeCommand(client, `echo '${overlayImage}' > /var/www/html/kml/slave_${leftmostrig}.kml`);
          return new AppSuccess("Logo sent successfully",200, result);
    } catch (error) {
-      throw (new AppError(error||"Failed to send Logo ",500));
+      throw (new AppError("Failed to send Logo ",500));
    } finally {
       client.end();
    }
@@ -245,7 +257,7 @@ export const showBalloonService = async (host, sshPort, username, password, numb
       const result = await executeCommand(client, `echo '${balloon}' > /var/www/html/kml/slave_${rightmostrig}.kml`);
       return new AppSuccess("Balloon sent successfully",200, result);
    } catch (error) {
-      throw (new AppError(error||"Failed to send Balloon ",500));
+      throw (new AppError("Failed to send Balloon ",500));
    } finally {
       client.end();
    }
