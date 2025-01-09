@@ -124,6 +124,8 @@
     <script>
         const colorMap = new Map([
             ["Orbiting", "blue"],
+            ["Connecting", "blue"],
+            ["Closing", "red"],
             ["Cleaning", "red"],
             ["Relaunching", "yellow"],
             ["Rebooting", "yellow"],
@@ -131,16 +133,18 @@
             ["Sending", "green"],
         ]);
         const textMap = new Map([
-            ["/api/execute-orbit", "Orbiting"],
-            ["/api/clean-visualization", "Cleaning"],
-            ["/api/clean-logos", "Cleaning"],
-            ["/api/relaunch-lg", "Relaunching"],
-            ["/api/reboot-lg", "Rebooting"],
-            ["/api/stop-orbit", "Stopping"],
-            ["/api/clean-balloon", "Cleaning"],
-            ["/api/send-kml", "Sending"],
-            ["/api/send-balloon", "Sending"],
-            ["/api/send-logo", "Sending"],
+            ["/api/lg-connection/connect-lg", "Connecting"],
+            ["/api/lg-connection/execute-orbit", "Orbiting"],
+            ["/api/lg-connection/clean-visualization", "Cleaning"],
+            ["/api/lg-connection/clean-logos", "Cleaning"],
+            ["/api/lg-connection/relaunch-lg", "Relaunching"],
+            ["/api/lg-connection/reboot-lg", "Rebooting"],
+            ["/api/lg-connection/shutdown-lg", "Closing"],
+            ["/api/lg-connection/stop-orbit", "Stopping"],
+            ["/api/lg-connection/clean-balloon", "Cleaning"],
+            ["/api/lg-connection/send-kml", "Sending"],
+            ["/api/lg-connection/show-balloon", "Sending"],
+            ["/api/lg-connection/show-logo", "Sending"],
         ]);
 
         const changeText = (_text, _color) => {

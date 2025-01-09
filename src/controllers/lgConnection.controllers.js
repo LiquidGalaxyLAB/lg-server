@@ -1,7 +1,18 @@
-import { cleanVisualizationService, cleanlogosService, relaunchLGService, shutdownLGService, rebootLGService, cleanBalloonService, stopOrbitService, executeOrbitService, flytoService, showOverlayImageService, showBalloonService, sendKmlService } from "../services/index.js";
+import { cleanVisualizationService, cleanlogosService, relaunchLGService, connectToLg, shutdownLGService, rebootLGService, cleanBalloonService, stopOrbitService, executeOrbitService, flytoService, showOverlayImageService, showBalloonService, sendKmlService } from "../services/index.js";
 import AppError from "../utils/error.utils.js";
 import path from 'path';
 export class LgConnectionController {
+    
+    connectToLg = async (req, res, next) => {
+        const { ip, port, username, password } = req.body;
+        try {
+            const response = await connectToLg (ip, port, username, password);
+            return res.status(200).json(response);
+        } catch (error) {
+            return next(new AppError(error || "Failed to connect to LG", 500));
+        }
+    }
+
     executeOrbit = async (req, res, next) => {
         const { ip, port, username, password } = req.body;
         try {
