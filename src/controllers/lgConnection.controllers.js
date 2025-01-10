@@ -1,6 +1,7 @@
 import { cleanVisualizationService, cleanlogosService, relaunchLGService, connectToLg, shutdownLGService, rebootLGService, cleanBalloonService, stopOrbitService, executeOrbitService, flytoService, showOverlayImageService, showBalloonService, sendKmlService } from "../services/index.js";
 import AppError from "../utils/error.utils.js";
 import path from 'path';
+import fs from 'fs/promises';
 export class LgConnectionController {
     
     connectToLg = async (req, res, next) => {
@@ -125,8 +126,6 @@ export class LgConnectionController {
     
     sendKml = async (req, res, next) => {
         const { ip, port, username, password, filename } = req.body;
-    
-        // Access the uploaded file
         const uploadedFile = req.file;
     
         if (!uploadedFile) {
@@ -137,7 +136,6 @@ export class LgConnectionController {
         try {
             const localPath = path.resolve(uploadedFile.path);
     
-            // Call the service function
             const response = await sendKmlService(
                 ip,
                 port,
@@ -147,8 +145,26 @@ export class LgConnectionController {
                 localPath
             );
     
+            // Delete the file after processing
+            try {
+                await fs.unlink(localPath);
+                console.log(`Cleaned up temporary file: ${localPath}`);
+            } catch (deleteError) {
+                console.error(`Failed to delete temporary file: ${localPath}`, deleteError);
+                // We don't throw here as the main operation was successful
+            }
+    
             return res.status(200).json(response);
         } catch (error) {
+            // Clean up the file even if the operation failed
+            try {
+                const localPath = path.resolve(uploadedFile.path);
+                await fs.unlink(localPath);
+                console.log(`Cleaned up temporary file after error: ${localPath}`);
+            } catch (deleteError) {
+                console.error(`Failed to delete temporary file: ${localPath}`, deleteError);
+            }
+    
             return next(new AppError(error || "Failed to process the KML", 500));
         }
     };
