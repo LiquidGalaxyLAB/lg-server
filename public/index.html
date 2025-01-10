@@ -135,6 +135,7 @@
         ]);
         const textMap = new Map([
             ["/api/lg-connection/connect-lg", "Connecting"],
+            ["/api/lg-connection/check-connection", "Silent"],
             ["/api/lg-connection/flyto", "Flying"],
             ["/api/lg-connection/execute-orbit", "Orbiting"],
             ["/api/lg-connection/clean-visualization", "Cleaning"],
@@ -150,6 +151,7 @@
         ]);
 
         const changeText = (_text, _color) => {
+            if (_text === "Silent") return;
             const heading = document.querySelector("h1");
             const animate = heading.querySelector("span");
             const text = animate.querySelector("span");
