@@ -5,8 +5,9 @@ export class LgConnectionController {
     
     connectToLg = async (req, res, next) => {
         const { ip, port, username, password } = req.body;
+        const isCheckConnection = req.path === "/check-connection";
         try {
-            const response = await connectToLg (ip, port, username, password);
+            const response = await connectToLg (ip, port, username, password, isCheckConnection);
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to connect to LG", 500));

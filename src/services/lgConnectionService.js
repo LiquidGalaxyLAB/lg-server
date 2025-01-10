@@ -13,10 +13,13 @@ const connectSSH = async (client, config) => {
    });
 }
 
-export const connectToLg = async (host, sshPort, username, password) => {
+export const connectToLg = async (host, sshPort, username, password, isCheckConnection) => {
    const client = new Client();
    try {
       await connectSSH(client, { host, sshPort, username, password });
+      if (isCheckConnection) {
+         return new AppSuccess("Connection Successfull", 200, null);
+      }
       return new AppSuccess("Connected to LG", 200, null);
    } catch (error) {
       throw new AppError("Failed to connect to LG", 500);

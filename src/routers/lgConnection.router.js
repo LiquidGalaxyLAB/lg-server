@@ -6,6 +6,7 @@ const lgConnectionController = new LgConnectionController();
 const router = Router();
 const upload = multer({ dest: "uploads/" });
 
+router.route("/check-connection").post(lgConnectionController.connectToLg);
 router.route("/connect-lg").post(lgConnectionController.connectToLg);
 router.route("/execute-orbit").post(lgConnectionController.executeOrbit);
 router.route("/clean-visualization").post(lgConnectionController.cleanVisualization);
