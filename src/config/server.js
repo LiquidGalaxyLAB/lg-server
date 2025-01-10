@@ -4,6 +4,7 @@ import errorMiddleWare from "../middleware/error.middleware.js";
 import http from "http";
 import { WebSocketServer } from "ws";
 import path from "path";
+import cors from "cors";
 
 export class Server {
   constructor(config) {
@@ -15,6 +16,7 @@ export class Server {
     this.currentCommand = "";
 
     this.app.use(express.json());
+    this.app.use(cors("*"));
     this.app.get("/ping", (req, res) => {
       return res.status(200).json({ message: "pong@@" });
     });
