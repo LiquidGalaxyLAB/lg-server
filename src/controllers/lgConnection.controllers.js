@@ -93,9 +93,9 @@ export class LgConnectionController {
     }
 
     flyto = async (req, res, next) => {
-        const { ip, port, username, password, latitude, longitude, tilt, bearing, rigs } = req.body;
+        const { ip, port, username, password, latitude, longitude, tilt, elevation, bearing } = req.body;
         try {
-            const response = await flytoService(ip, port, username, password, latitude, longitude, tilt, bearing, rigs);
+            const response = await flytoService(ip, port, username, password, latitude, longitude, tilt, elevation, bearing );
             return res.status(200).json(response);
         } catch (error) {
             return next(new AppError(error || "Failed to fly to ", 500));
