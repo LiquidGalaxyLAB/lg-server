@@ -217,14 +217,12 @@ export const cleanBalloonService = async (host, sshPort, username, password, num
    }
 }
 
-export const flytoService = async (host, sshPort, username, password, latitude, longitude, tilt, bearing, numberofrigs = defaultRigs) => {
+export const flytoService = async (host, sshPort, username, password, latitude, longitude, tilt, elevation, bearing) => {
    let client = new Client();
-   let port = parseInt(sshPort, 10);
-   const zoomValue = (591657550.500000 / Math.pow(2, 13.15393352508545));
-   const syncZoom = zoomValue / parseInt(numberofrigs,10);
+   let port = +sshPort;
    try {
       await connectSSH(client, { host, port, username, password });
-      const result = await executeCommand(client, `echo "flytoview=${lookAtLinear(latitude, longitude, syncZoom, tilt, bearing)}" > /tmp/query.txt`);
+      const result = await executeCommand(client, `echo "flytoview=${lookAtLinear(latitude, longitude, elevation, tilt, bearing)}" > /tmp/query.txt`);
       return new AppSuccess("Flyto executed successfully",200, result);
    } catch (error) {
      throw (new AppError("Failed to fly to ",500));
