@@ -14,14 +14,17 @@ const connectSSH = async (client, config) => {
 }
 
 export const connectToLg = async (host, sshPort, username, password, isCheckConnection) => {
+   console.log("host", host, "sshPort", sshPort, "username", username, "password", password);
    const client = new Client();
+   const port = +sshPort;
    try {
-      await connectSSH(client, { host, sshPort, username, password });
+      await connectSSH(client, { host, port, username, password });
       if (isCheckConnection) {
          return new AppSuccess("Connection Successfull", 200, null);
       }
       return new AppSuccess("Connected to LG", 200, null);
    } catch (error) {
+      console.log("error", error);
       throw new AppError("Failed to connect to LG", 500);
    } finally {
       client.end();
@@ -73,8 +76,9 @@ export const executeOrbitService = async (host, sshPort, username, password) => 
 
 export const cleanVisualizationService = async (host, port, username, password) => {
    const client = new Client();
+   const sshPort = +port;
    try {
-      await connectSSH(client, { host, port, username, password });
+      await connectSSH(client, { host, sshPort, username, password });
       const result = await executeCommand(client, "> /var/www/html/kmls.txt");
       return new AppSuccess("Visualization cleaned successfully",200, result);
    } catch (error) {
