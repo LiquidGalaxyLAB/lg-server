@@ -186,14 +186,14 @@ export const executeOrbitService = async (
 
 export const cleanVisualizationService = async (
   host,
-  port,
+  sshPort,
   username,
   password
 ) => {
   const client = new Client();
-  const sshPort = +port;
+  const port = parseInt(sshPort, 10);
   try {
-    await connectSSH(client, { host, sshPort, username, password });
+    await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(client, "> /var/www/html/kmls.txt");
     return new AppSuccess("Visualization cleaned successfully", 200, result);
   } catch (error) {
