@@ -1,6 +1,6 @@
-import { Server,PORT} from "./config/index.js"
+import { Server, PORT } from "./config/index.js";
 
 const server = new Server({
-    port:PORT
-})
-server.start()
+  port: PORT,
+});
+server.start();

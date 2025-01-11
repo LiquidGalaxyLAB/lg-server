@@ -1,1 +1,1 @@
-export * from "./lgConnection.controllers.js"
+export * from "./lgConnection.controllers.js";
