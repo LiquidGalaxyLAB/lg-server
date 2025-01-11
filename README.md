@@ -76,10 +76,10 @@ Follow these steps to add a new command to the application:
 1. Navigate to `services`.
 2. Add a new service function:
    ```javascript
-   export const newCommandService = async (host, sshPort, username, password, command) => {
+   export const newCommandService = async (ip, port, username, password, command) => {
        const client = new Client();
        try {
-           await connectSSH(client, { host, port: parseInt(sshPort, 10), username, password });
+           await connectSSH(client, { ip, port: parseInt(port, 10), username, password });
            const result = await executeCommand(client, command);
            console.log("Command result:", result);
            return result;
@@ -97,8 +97,8 @@ Follow these steps to add a new command to the application:
 2. Add a new method in `LgConnectionController`:
    ```javascript
    newCommand = async (req, res) => {
-       const { host, sshPort, username, password, command } = req.body;
-       const response = await newCommandService(host, sshPort, username, password, command);
+       const { ip, port, username, password, command } = req.body;
+       const response = await newCommandService(ip, port, username, password, command);
        return res.status(200).json(response);
    };
    ```
@@ -116,8 +116,8 @@ Use `Postman` or `curl` to test the new endpoint:
 curl -X POST http://localhost:8000/api/new-command \
 -H "Content-Type: application/json" \
 -d '{
-    "host": "192.168.x.x",
-    "sshPort": "22",
+    "ip": "192.168.x.x",
+    "port": "22",
     "username": "your-username",
     "password": "your-password",
     "command": "your-command"
