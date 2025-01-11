@@ -1,73 +1,78 @@
-# LG Control Server
+# LG Control Server 🚀
 
-The **LG Control Server** is a Node.js-based application designed to control and manage Liquid Galaxy (LG) systems via SSH. It provides an easy-to-use REST API for executing LG-related commands such as managing orbit visualizations, cleaning resources, and rebooting rigs.
+The **LG Control Server** is a powerful and intuitive Node.js-based application for managing Liquid Galaxy (LG) systems via SSH. It offers a robust REST API to handle various LG operations, from visualizations to system management.
 
-- [**Read Swagger Docs**](https://rohit-554.github.io/LgServerSwaggerApi/#/)
-
----
-
-## Table of Contents
-
-1. [Getting Started](#getting-started)
-2. [Project Structure](#project-structure)
-3. [How to Run](#how-to-run)
-4. [Adding a New Command](#adding-a-new-command)
-5. [Endpoints](#endpoints)
-6. [License](#license)
+[**View Swagger API Docs**](https://rohit-554.github.io/LgServerSwaggerApi/#/)
 
 ---
 
-## Getting Started
+## 📝 Table of Contents
+
+1. [Getting Started](#getting-started)  
+2. [Project Structure](#project-structure)  
+3. [How to Run](#how-to-run)  
+4. [Adding a New Command](#adding-a-new-command)  
+5. [Endpoints](#endpoints)  
+6. [License](#license)  
+7. [Contributors](#contributors)  
+
+---
+
+## 🚀 Getting Started
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/LovelySehotra/lgserver-experimental.git
-   cd lgserver-experimental
+   git clone https://github.com/LiquidGalaxyLAB/lg-server.git
+   cd lg-server
    ```
 
-2. Install the required dependencies:
+2. **Install dependencies**:
 
    ```bash
    npm install
    ```
 
-3. Install mkcert (see [installation guide](https://github.com/FiloSottile/mkcert)) then run these commands to serve your lg-server on https:
+3. **Set up HTTPS with `mkcert`**:  
+   Install `mkcert` (follow [this guide](https://github.com/FiloSottile/mkcert)) and generate your SSL certificates:
 
-Make a certs folder and place your generated key and cert pem files in that folder.
+   ```bash
+   mkcert -install  
+   mkcert localhost <ip_address>
+   ```
 
-```bash
-mkcert -install   
-mkcert localhost <ip_addr>
-```
+   - Create a `certs` folder in the project root and place the generated `.key` and `.pem` files there.  
+   - [Learn more](https://zellwk.com/blog/serving-https-locally-with-node/). Rename them to cert.pem and key.pem as shown in the article.
 
-Check [this guide](https://zellwk.com/blog/serving-https-locally-with-node/) for more info.
+4. **Install `RootCA.pem` on your device**:
+
+   Find the `RootCA.pem` location:
+
+   ```bash
+   mkcert CAROOT
+   ```
+
+   Send the `RootCA.pem` file to your Android or iOS device, rename it with a `.crt` extension, and install it.
 
 ---
 
-## Project Structure
+## 🚧 Project Structure
 
-- **`app.js`**: Main server entry point.
-- **`server.js`**: Sets up routes, middleware, and starts the application.
-- **`routers`**: Contains API route definitions.
-- **`controllers`**: Includes logic to process incoming API requests.
-- **`services`**: Handles core SSH interactions and reusable logic.
+- **`app.js`**: Entry point of the application.  
+- **`server.js`**: Configures middleware, routes, and starts the server.  
+- **`routers/`**: Defines API routes.  
+- **`controllers/`**: Contains logic to handle API requests.  
+- **`services/`**: Implements SSH interactions and reusable logic.
 
 ---
 
-## How to Run
+## ▶️ How to Run
 
 1. Start the server:
 
    ```bash
-   node server.js
-   ```
-
-   or
-
-    ```bash
    npm run dev
    ```
 
@@ -77,7 +82,7 @@ Check [this guide](https://zellwk.com/blog/serving-https-locally-with-node/) for
    curl http://localhost:8000/ping
    ```
 
-   **Expected Response:**
+   **Expected Response**:
 
    ```json
    { "message": "pong@@" }
@@ -85,113 +90,99 @@ Check [this guide](https://zellwk.com/blog/serving-https-locally-with-node/) for
 
 ---
 
-## Adding a New Command
-
-Follow these steps to add a new command to the application:
+## ➕ Adding a New Command
 
 ### Step 1: Create a Service Function
 
-1. Navigate to `services`.
-2. Add a new service function:
+1. In the `services/` directory, add a new function:
 
    ```javascript
-   export const newCommandService = async (ip, port, username, password, command) => {
-       const client = new Client();
-       try {
-           await connectSSH(client, { ip, port: parseInt(port, 10), username, password });
-           const result = await executeCommand(client, command);
-           console.log("Command result:", result);
-           return result;
-       } catch (error) {
-           console.error("Error during SSH operations:", error);
-           return { success: false, message: error.message };
-       } finally {
-           client.end();
-       }
-   };
+   export const newCommandService = async (ip, port, username, password, command) => {  
+       const client = new Client();  
+       try {  
+           await connectSSH(client, { ip, port: parseInt(port, 10), username, password });  
+           const result = await executeCommand(client, command);  
+           console.log("Command result:", result);  
+           return result;  
+       } catch (error) {  
+           console.error("Error during SSH operations:", error);  
+           return { success: false, message: error.message };  
+       } finally {  
+           client.end();  
+       }  
+   };  
    ```
 
 ### Step 2: Add a Controller Method
 
-1. Navigate to `controllers`.
-2. Add a new method in `LgConnectionController`:
+1. In `controllers/`, add the logic to handle the new command:
 
    ```javascript
-   newCommand = async (req, res) => {
-       const { ip, port, username, password, command } = req.body;
-       const response = await newCommandService(ip, port, username, password, command);
-       return res.status(200).json(response);
-   };
+   newCommand = async (req, res) => {  
+       const { ip, port, username, password, command } = req.body;  
+       const response = await newCommandService(ip, port, username, password, command);  
+       return res.status(200).json(response);  
+   };  
    ```
 
 ### Step 3: Define the Route
 
-1. Navigate to `routers/index.js`.
-2. Add a route for the new command:
+1. Add a route in `routers/index.js`:
 
    ```javascript
-   router.route("/new-command").post(lgConnectionController.newCommand);
+   router.route("/new-command").post(lgConnectionController.newCommand);  
    ```
 
-### Step 4: Test the New Endpoint
+### Step 4: Test the Endpoint
 
-Use `Postman` or `curl` to test the new endpoint:
+1. Use `curl` or Postman to test:
 
-```bash
-curl -X POST http://localhost:8000/api/new-command \
--H "Content-Type: application/json" \
--d '{
-    "ip": "192.168.x.x",
-    "port": "22",
-    "username": "your-username",
-    "password": "your-password",
-    "command": "your-command"
-}'
-```
-
----
-
-## Endpoints
-
-### Health Check
-
-- **Endpoint**: `/ping`
-- **Method**: GET
-- **Response**:
-
-  ```json
-  { "message": "pong@@" }
-  ```
-
-### Command Endpoints
-
-| Endpoint                      | Method | Description                      |
-|-------------------------------|--------|----------------------------------|
-| `/api/execute-orbit`          | POST   | Executes an orbit command.       |
-| `/api/clean-visualization`    | POST   | Cleans the LG visualization.     |
-| `/api/clean-logos`            | POST   | Removes LG logos.                |
-| `/api/relaunch-lg`            | POST   | Relaunches the LG system.        |
-| `/api/reboot-lg`              | POST   | Reboots the LG system.           |
-| `/api/stop-orbit`             | POST   | Stops the orbit process.         |
-| `/api/clean-balloon`          | POST   | Cleans up balloon visualizations.|
-| `/api/new-command`            | POST   | Executes a custom command.       |
+   ```bash
+   curl -X POST http://localhost:8000/api/new-command \  
+   -H "Content-Type: application/json" \  
+   -d '{  
+       "ip": "192.168.x.x",  
+       "port": "22",  
+       "username": "your-username",  
+       "password": "your-password",  
+       "command": "your-command"  
+   }'  
+   ```
 
 ---
 
-## License
+## 🌐 Endpoints
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+### Core Endpoints
 
-## Contributor
+| Endpoint                      | Method | Description                      |  
+|-------------------------------|--------|----------------------------------|  
+| `/ping`                       | GET    | Health check endpoint.           |  
+| `/api/execute-orbit`          | POST   | Executes an orbit command.       |  
+| `/api/clean-visualization`    | POST   | Cleans LG visualizations.        |  
+| `/api/clean-logos`            | POST   | Removes LG logos.                |  
+| `/api/relaunch-lg`            | POST   | Relaunches the LG system.        |  
+| `/api/reboot-lg`              | POST   | Reboots the LG system.           |  
+| `/api/stop-orbit`             | POST   | Stops orbit visualization.       |  
+| `/api/clean-balloon`          | POST   | Cleans balloon visualizations.   |  
+| `/api/new-command`            | POST   | Executes a custom command.       |  
 
-This projected is contributed by
-  
-<a href="https://github.com/LiquidGalaxyLAB/lg-server/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server" />
-</a>
+---
 
-<a href="https://github.com/LovelySehotra12/Swiper-Carousel/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=LovelySehotra12/Swiper-Carousel" />
-</a>
+## 📓 License
 
-The frontend is Designed by Mentor Yash.
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🤝 Contributors
+
+### Contributors
+
+<a href="https://github.com/LiquidGalaxyLAB/lg-server/graphs/contributors">  
+  <img src="https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server" />  
+</a>  
+
+### Frontend Designer
+
+Designed by **Mentor Yash**.
