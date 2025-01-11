@@ -180,7 +180,7 @@
             }, 4800);
         };
 
-        const ws = new WebSocket(`ws://${window.location.host}`);
+        const ws = new WebSocket(`wss://${window.location.host}`);
         ws.onmessage = (event) => {
             if (event.data) changeText(textMap.get(event.data), colorMap.get(textMap.get(event.data)));
         };

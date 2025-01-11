@@ -1,5 +1,3 @@
-
-
 # LG Control Server
 
 The **LG Control Server** is a Node.js-based application designed to control and manage Liquid Galaxy (LG) systems via SSH. It provides an easy-to-use REST API for executing LG-related commands such as managing orbit visualizations, cleaning resources, and rebooting rigs.
@@ -24,15 +22,28 @@ The **LG Control Server** is a Node.js-based application designed to control and
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/LovelySehotra/lgserver-experimental.git
    cd lgserver-experimental
    ```
 
 2. Install the required dependencies:
+
    ```bash
    npm install
    ```
+
+3. Install mkcert (see [installation guide](https://github.com/FiloSottile/mkcert)) then run these commands to serve your lg-server on https:
+
+Make a certs folder and place your generated key and cert pem files in that folder.
+
+```bash
+mkcert -install   
+mkcert localhost <ip_addr>
+```
+
+Check [this guide](https://zellwk.com/blog/serving-https-locally-with-node/) for more info.
 
 ---
 
@@ -43,25 +54,31 @@ The **LG Control Server** is a Node.js-based application designed to control and
 - **`routers`**: Contains API route definitions.
 - **`controllers`**: Includes logic to process incoming API requests.
 - **`services`**: Handles core SSH interactions and reusable logic.
+
 ---
 
 ## How to Run
 
 1. Start the server:
+
    ```bash
    node server.js
    ```
+
    or
+
     ```bash
    npm run dev
    ```
 
 2. Verify the server is running by hitting the health check endpoint:
+
    ```bash
    curl http://localhost:8000/ping
    ```
 
    **Expected Response:**
+
    ```json
    { "message": "pong@@" }
    ```
@@ -73,13 +90,15 @@ The **LG Control Server** is a Node.js-based application designed to control and
 Follow these steps to add a new command to the application:
 
 ### Step 1: Create a Service Function
+
 1. Navigate to `services`.
 2. Add a new service function:
+
    ```javascript
-   export const newCommandService = async (host, sshPort, username, password, command) => {
+   export const newCommandService = async (ip, port, username, password, command) => {
        const client = new Client();
        try {
-           await connectSSH(client, { host, port: parseInt(sshPort, 10), username, password });
+           await connectSSH(client, { ip, port: parseInt(port, 10), username, password });
            const result = await executeCommand(client, command);
            console.log("Command result:", result);
            return result;
@@ -93,31 +112,37 @@ Follow these steps to add a new command to the application:
    ```
 
 ### Step 2: Add a Controller Method
+
 1. Navigate to `controllers`.
 2. Add a new method in `LgConnectionController`:
+
    ```javascript
    newCommand = async (req, res) => {
-       const { host, sshPort, username, password, command } = req.body;
-       const response = await newCommandService(host, sshPort, username, password, command);
+       const { ip, port, username, password, command } = req.body;
+       const response = await newCommandService(ip, port, username, password, command);
        return res.status(200).json(response);
    };
    ```
 
 ### Step 3: Define the Route
+
 1. Navigate to `routers/index.js`.
 2. Add a route for the new command:
+
    ```javascript
    router.route("/new-command").post(lgConnectionController.newCommand);
    ```
 
 ### Step 4: Test the New Endpoint
+
 Use `Postman` or `curl` to test the new endpoint:
+
 ```bash
 curl -X POST http://localhost:8000/api/new-command \
 -H "Content-Type: application/json" \
 -d '{
-    "host": "192.168.x.x",
-    "sshPort": "22",
+    "ip": "192.168.x.x",
+    "port": "22",
     "username": "your-username",
     "password": "your-password",
     "command": "your-command"
@@ -129,9 +154,11 @@ curl -X POST http://localhost:8000/api/new-command \
 ## Endpoints
 
 ### Health Check
+
 - **Endpoint**: `/ping`
 - **Method**: GET
 - **Response**:
+
   ```json
   { "message": "pong@@" }
   ```
@@ -151,18 +178,18 @@ curl -X POST http://localhost:8000/api/new-command \
 
 ---
 
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-
 ## Contributor
 
-This projected is contributed by <br></br>
+This projected is contributed by
+  
 <a href="https://github.com/LiquidGalaxyLAB/lg-server/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server" />
 </a>
+
 <a href="https://github.com/LovelySehotra12/Swiper-Carousel/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=LovelySehotra12/Swiper-Carousel" />
 </a>

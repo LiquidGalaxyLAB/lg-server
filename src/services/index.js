@@ -1,1 +1,1 @@
-export * from "./lgConnectionService.js"
+export * from "./lgConnectionService.js";

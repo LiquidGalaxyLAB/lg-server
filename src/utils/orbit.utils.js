@@ -1,9 +1,9 @@
-class Orbit {
-    static generateOrbitTag(lat,long,heading) {
-      let heading = parseFloat(heading);
+ class Orbit {
+    static generateOrbitTag(lat,long,heading, range) {
+      heading = parseFloat(heading);
+      let tilt = 60;
       let orbit = 0;
       let content = '';
-      const range = '40000';
   
       while (orbit <= 36) {
         if (heading >= 360) heading -= 360;
@@ -16,7 +16,7 @@ class Orbit {
               <longitude>${long}</longitude>
               <latitude>${lat}</latitude>
               <heading>${heading}</heading>
-              <tilt>60</tilt>
+              <tilt>${tilt}</tilt>
               <range>${range}</range>
               <gx:fovy>60</gx:fovy>
               <altitude>3341.7995674</altitude>
@@ -28,7 +28,6 @@ class Orbit {
         heading += 10;
         orbit += 1;
       }
-  
       return content;
     }
   
@@ -47,3 +46,4 @@ class Orbit {
     }
   }
   
+  export default Orbit;

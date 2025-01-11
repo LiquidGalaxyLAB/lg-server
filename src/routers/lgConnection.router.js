@@ -9,7 +9,9 @@ const upload = multer({ dest: "uploads/" });
 router.route("/check-connection").post(lgConnectionController.connectToLg);
 router.route("/connect-lg").post(lgConnectionController.connectToLg);
 router.route("/execute-orbit").post(lgConnectionController.executeOrbit);
-router.route("/clean-visualization").post(lgConnectionController.cleanVisualization);
+router
+  .route("/clean-visualization")
+  .post(lgConnectionController.cleanVisualization);
 router.route("/clean-logos").post(lgConnectionController.cleanlogos);
 router.route("/relaunch-lg").post(lgConnectionController.relaunchLG);
 router.route("/reboot-lg").post(lgConnectionController.rebootLG);
@@ -19,6 +21,8 @@ router.route("/clean-balloon").post(lgConnectionController.cleanBalloon);
 router.route("/flyto").post(lgConnectionController.flyto);
 router.route("/show-logo").post(lgConnectionController.showOverlayImage);
 router.route("/show-balloon").post(lgConnectionController.showBallon);
-router.route("/send-kml").post(upload.single("file"), lgConnectionController.sendKml);
+router
+  .route("/send-kml")
+  .post(upload.single("file"), lgConnectionController.sendKml);
 
 export default router;
