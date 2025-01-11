@@ -34,84 +34,134 @@ export class LgConnectionController {
     }
   };
 
-    executeOrbit = async (req, res, next) => {
-        const { ip, port, username, password, latitude, longitude, tilt, elevation, bearing } = req.body;
-        try {
-            const connections = await executeOrbitService(ip, port, username, password, latitude, longitude, tilt, elevation, bearing);
-            return res.status(200).json(connections);
-        } catch (error) {
-            console.log("error", error);
-            return next(new AppError(error || "Failed to execute orbit", 500));
-        }
-
+  executeOrbit = async (req, res, next) => {
+    const {
+      ip,
+      port,
+      username,
+      password,
+      latitude,
+      longitude,
+      tilt,
+      elevation,
+      bearing,
+    } = req.body;
+    try {
+      const connections = await executeOrbitService(
+        ip,
+        port,
+        username,
+        password,
+        latitude,
+        longitude,
+        tilt,
+        elevation,
+        bearing
+      );
+      return res.status(200).json(connections);
+    } catch (error) {
+      console.log("error", error);
+      return next(new AppError(error || "Failed to execute orbit", 500));
     }
-    cleanVisualization = async (req, res, next) => {
-        const { ip, port, username, password } = req.body;
-        try {
-            const response = await cleanVisualizationService(ip, port, username, password);
-            return res.status(200).json(response);
-        } catch (error) {
-            return next(new AppError(error || "Failed to Clean Visualization", 500));
-        }
+  };
+  cleanVisualization = async (req, res, next) => {
+    const { ip, port, username, password } = req.body;
+    try {
+      const response = await cleanVisualizationService(
+        ip,
+        port,
+        username,
+        password
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to Clean Visualization", 500));
     }
-    cleanlogos = async (req, res, next) => {
-        const { ip, port, username, password, rigs } = req.body;
-        try {
-            const response = await cleanlogosService(ip, port, username, password, rigs);
-            return res.status(200).json(response);
-        } catch (error) {
-            return next(new AppError(error || "Failed to Clean Logo", 500));
-        }
+  };
+  cleanlogos = async (req, res, next) => {
+    const { ip, port, username, password, rigs } = req.body;
+    try {
+      const response = await cleanlogosService(
+        ip,
+        port,
+        username,
+        password,
+        rigs
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to Clean Logo", 500));
     }
-    relaunchLG = async (req, res, next) => {
-        const { ip, port, username, password, rigs } = req.body;
-        try {
-            const response = await relaunchLGService(ip, port, username, password, rigs);
-            return res.status(200).json(response);
-
-        } catch (error) {
-            return next(new AppError(error || "Failed to Re-launch LG ", 500));
-        }
+  };
+  relaunchLG = async (req, res, next) => {
+    const { ip, port, username, password, rigs } = req.body;
+    try {
+      const response = await relaunchLGService(
+        ip,
+        port,
+        username,
+        password,
+        rigs
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to Re-launch LG ", 500));
     }
-    shutdownLG = async (req, res, next) => {
-        const { ip, port, username, password, rigs } = req.body;
-        try {
-            const response = await shutdownLGService(ip, port, username, password, rigs);
-            return res.status(200).json(response);
-        } catch (error) {
-            return next(new AppError(error || "Failed to Shutdown LG ", 500));
-        }
-
+  };
+  shutdownLG = async (req, res, next) => {
+    const { ip, port, username, password, rigs } = req.body;
+    try {
+      const response = await shutdownLGService(
+        ip,
+        port,
+        username,
+        password,
+        rigs
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to Shutdown LG ", 500));
     }
-    rebootLG = async (req, res, next) => {
-        const { ip, port, username, password, rigs } = req.body;
-        try {
-            const response = await rebootLGService(ip, port, username, password, rigs);
-            return res.status(200).json(response);
-
-        } catch (error) {
-            return next(new AppError(error || "Failed to reboot LG", 500));
-        }
+  };
+  rebootLG = async (req, res, next) => {
+    const { ip, port, username, password, rigs } = req.body;
+    try {
+      const response = await rebootLGService(
+        ip,
+        port,
+        username,
+        password,
+        rigs
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to reboot LG", 500));
     }
-    stopOrbit = async (req, res, next) => {
-        const { ip, port, username, password } = req.body;
-        try {
-            const response = await stopOrbitService(ip, port, username, password);
-            return res.status(200).json(response);
-        } catch (error) {
-            return next(new AppError(error || "Failed to Stop Orbit ", 500));
-        }
+  };
+  stopOrbit = async (req, res, next) => {
+    const { ip, port, username, password } = req.body;
+    try {
+      const response = await stopOrbitService(ip, port, username, password);
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to Stop Orbit ", 500));
     }
-    cleanBalloon = async (req, res, next) => {
-        const { ip, port, username, password, rigs } = req.body;
-        try {
-            const response = await cleanBalloonService(ip, port, username, password, rigs);
-            return res.status(200).json(response);
-        } catch (error) {
-            return next(new AppError(error || "Failed to Clean Balloon ", 500));
-        }
-
+  };
+  cleanBalloon = async (req, res, next) => {
+    const { ip, port, username, password, rigs } = req.body;
+    try {
+      const response = await cleanBalloonService(
+        ip,
+        port,
+        username,
+        password,
+        rigs
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(new AppError(error || "Failed to Clean Balloon ", 500));
     }
+  };
 
   flyto = async (req, res, next) => {
     const {
