@@ -183,6 +183,10 @@ This project is licensed under the [MIT License](LICENSE).
   <img src="https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server" />  
 </a>  
 
+### Backend Developer
+
+The backend is developed by [Lovely Sehotra](https://github.com/LovelySehotra).
+
 ### Frontend Designer
 
 Designed by **Mentor Yash**.
