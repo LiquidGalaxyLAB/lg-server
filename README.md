@@ -36,6 +36,8 @@ The **LG Control Server** is a Node.js-based application designed to control and
 
 3. Install mkcert (see [installation guide](https://github.com/FiloSottile/mkcert)) then run these commands to serve your lg-server on https:
 
+Make a certs folder and place your generated key and cert pem files in that folder.
+
 ```bash
 mkcert -install   
 mkcert localhost <ip_addr>
