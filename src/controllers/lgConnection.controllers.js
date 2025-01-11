@@ -16,9 +16,9 @@ export class LgConnectionController {
     }
 
     executeOrbit = async (req, res, next) => {
-        const { ip, port, username, password } = req.body;
+        const { ip, port, username, password, latitude, longitude, tilt, elevation, bearing } = req.body;
         try {
-            const connections = await executeOrbitService(ip, port, username, password);
+            const connections = await executeOrbitService(ip, port, username, password, latitude, longitude, tilt, elevation, bearing);
             return res.status(200).json(connections);
         } catch (error) {
             console.log("error", error);
