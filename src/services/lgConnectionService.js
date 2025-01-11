@@ -75,7 +75,7 @@ export const executeOrbitService = async (
 ) => {
   const client = new Client();
   try {
-    let port = parseInt(sshPort, 10);
+    const port = parseInt(sshPort, 10);
     const command = 'echo "playtour=Orbit" > /tmp/query.txt';
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(client, command);
@@ -114,14 +114,14 @@ export const cleanlogosService = async (
   numberofrigs = defaultRigs
 ) => {
   const leftmostrig = leftMostRig(numberofrigs);
-  let port = parseInt(sshPort, 10);
-  let blank = `<?xml version="1.0" encoding="UTF-8"?>
+  const port = parseInt(sshPort, 10);
+  const blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
  <Document>
  </Document>
 </kml>`;
   const client = new Client();
-  let command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostrig}.kml`;
+  const command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostrig}.kml`;
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(client, command);
@@ -140,9 +140,9 @@ export const relaunchLGService = async (
   password,
   numberofrigs = defaultRigs
 ) => {
-  let client = new Client();
-  let rigs = parseInt(numberofrigs, 10);
-  let port = parseInt(sshPort, 10);
+  const client = new Client();
+  const rigs = parseInt(numberofrigs, 10);
+  const port = parseInt(sshPort, 10);
 
   try {
     for (let i = 1; i <= rigs; i++) {
@@ -185,9 +185,9 @@ export const shutdownLGService = async (
   password,
   numberofrigs = defaultRigs
 ) => {
-  let client = new Client();
-  let rigs = parseInt(numberofrigs, 10);
-  let port = parseInt(sshPort, 10);
+  const client = new Client();
+  const rigs = parseInt(numberofrigs, 10);
+  const port = parseInt(sshPort, 10);
   try {
     for (let i = 1; i <= rigs; i++) {
       await connectSSH(client, { host, port, username, password });
@@ -211,9 +211,9 @@ export const rebootLGService = async (
   password,
   numberofrigs = defaultRigs
 ) => {
-  let client = new Client();
-  let rigs = parseInt(numberofrigs, 10);
-  let port = parseInt(sshPort, 10);
+  const client = new Client();
+  const rigs = parseInt(numberofrigs, 10);
+  const port = parseInt(sshPort, 10);
   try {
     for (let i = 1; i <= rigs; i++) {
       await connectSSH(client, { host, port, username, password });
@@ -231,8 +231,8 @@ export const rebootLGService = async (
   }
 };
 export const stopOrbitService = async (host, sshPort, username, password) => {
-  let client = new Client();
-  let port = parseInt(sshPort, 10);
+  const client = new Client();
+  const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
@@ -253,10 +253,10 @@ export const cleanBalloonService = async (
   password,
   numberofrigs = defaultRigs
 ) => {
-  let client = new Client();
-  let rigs = parseInt(numberofrigs, 10);
-  let port = parseInt(sshPort, 10);
-  let blank = `<?xml version="1.0" encoding="UTF-8"?>
+  const client = new Client();
+  const rigs = parseInt(numberofrigs, 10);
+  const port = parseInt(sshPort, 10);
+  const blank = `<?xml version="1.0" encoding="UTF-8"?>
       <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
         <Document>
         </Document>
@@ -287,8 +287,8 @@ export const flytoService = async (
   elevation,
   bearing
 ) => {
-  let client = new Client();
-  let port = +sshPort;
+  const client = new Client();
+  const port = +sshPort;
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
@@ -317,9 +317,9 @@ export const showOverlayImageService = async (
   numberofrigs = defaultRigs,
   overlayImage
 ) => {
-  let client = new Client();
+  const client = new Client();
   const leftmostrig = leftMostRig(numberofrigs);
-  let port = parseInt(sshPort, 10);
+  const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
@@ -342,8 +342,8 @@ export const showBalloonService = async (
   numberofrigs = defaultRigs,
   balloon
 ) => {
-  let client = new Client();
-  let port = parseInt(sshPort, 10);
+  const client = new Client();
+  const port = parseInt(sshPort, 10);
   const rightmostrig = rightMostRig(numberofrigs);
   try {
     await connectSSH(client, { host, port, username, password });
