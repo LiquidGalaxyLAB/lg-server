@@ -4,44 +4,34 @@ import AppError from "../utils/error.utils.js";
 import { defaultRigs, leftMostRig, rightMostRig } from "../utils/rigs.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
+import fs from 'fs';
+import path from "path";
+import Orbit from "../utils/orbit.utils.js";
+import MountKml from "../utils/mountkml.utils.js";
+
 const connectSSH = async (client, config) => {
   return new Promise((resolve, reject) => {
     client.on("ready", resolve).on("error", reject).connect(config);
   });
 };
 
-export const connectToLg = async (
-  host,
-  sshPort,
-  username,
-  password,
-  isCheckConnection
-) => {
-  console.log(
-    "host",
-    host,
-    "sshPort",
-    sshPort,
-    "username",
-    username,
-    "password",
-    password
-  );
-  const client = new Client();
-  const port = +sshPort;
-  try {
-    await connectSSH(client, { host, port, username, password });
-    if (isCheckConnection) {
-      return new AppSuccess("Connection Successfull", 200, null);
-    }
-    return new AppSuccess("Connected to LG", 200, null);
-  } catch (error) {
-    console.log("error", error);
-    throw new AppError("Failed to connect to LG", 500);
-  } finally {
-    client.end();
-  }
-};
+export const connectToLg = async (host, sshPort, username, password, isCheckConnection) => {
+   console.log("host", host, "sshPort", sshPort, "username", username, "password", password);
+   const client = new Client();
+   const port = +sshPort;
+   try {
+      await connectSSH(client, { host, port, username, password });
+      if (isCheckConnection) {
+         return new AppSuccess("Connection Successfull", 200, null);
+      }
+      return new AppSuccess("Connected to LG", 200, null);
+   } catch (error) {
+      console.log("error", error);
+      throw new AppError("Failed to connect to LG", 500);
+   } finally {
+      client.end();
+   }
+}
 
 const executeCommand = async (client, command) => {
   return new Promise((resolve, reject) => {
@@ -67,44 +57,130 @@ const executeCommand = async (client, command) => {
   });
 };
 
-export const executeOrbitService = async (
-  host,
-  sshPort,
-  username,
-  password
-) => {
-  const client = new Client();
-  try {
-    const port = parseInt(sshPort, 10);
-    const command = 'echo "playtour=Orbit" > /tmp/query.txt';
-    await connectSSH(client, { host, port, username, password });
-    const result = await executeCommand(client, command);
-    return new AppSuccess("Orbit executed successfully", 200, result);
-  } catch (error) {
-    throw new AppError("Failed to execute orbit", 500);
-  } finally {
-    client.end();
-  }
-};
+const getRootDir = () => {
+   // Start from current directory and go up until we find lg-server
+   let currentDir = process.cwd();
+   while (currentDir !== path.parse(currentDir).root) {
+     if (path.basename(currentDir) === 'lg-server') {
+       return currentDir;
+     }
+     currentDir = path.dirname(currentDir);
+   }
+   throw new AppError('lg-server directory not found', 500);
+ };
+ 
+ export const buildOrbit = async (content) => {
+   try {
+     // Get the root directory and construct uploads path
+     const rootDir = getRootDir();
+     const uploadsDir = path.join(rootDir, 'uploads');
+     
+     // Ensure uploads directory exists
+     if (!fs.existsSync(uploadsDir)) {
+       fs.mkdirSync(uploadsDir, { recursive: true });
+     }
+     
+     // Create file path in uploads directory
+     const filePath = path.join(uploadsDir, 'Orbit.kml');
+     
+     // Mount the KML content
+     content = new MountKml("Orbit", content).mount();
+     
+     return new Promise((resolve, reject) => {
+       fs.writeFile(filePath, content, (err) => {
+         if (err) {
+           console.error('Error writing to file:', err);
+           return reject(new AppError('Failed to create the file', 500));
+         }
+         console.log('File created successfully:', filePath);
+         resolve(filePath);
+       });
+     });
+   } catch (error) {
+     throw new AppError(error.message || 'Failed to process orbit file', 500);
+   }
+ };
+ 
+ export const executeOrbitService = async (
+   host,
+   sshPort,
+   username,
+   password,
+   latitude,
+   longitude,
+   elevation,
+   tilt,
+   bearing
+ ) => {
+   const sftp = new SSHClient();
+   const client = new Client();
+   const remoteKmlPath = `/var/www/html/Orbit.kml`;
+   const remoteKmlListPath = `/var/www/html/kmls.txt`;
+ 
+   try {
+     const port = +sshPort;
 
-export const cleanVisualizationService = async (
-  host,
-  port,
-  username,
-  password
-) => {
-  const client = new Client();
-  const sshPort = +port;
-  try {
-    await connectSSH(client, { host, sshPort, username, password });
-    const result = await executeCommand(client, "> /var/www/html/kmls.txt");
-    return new AppSuccess("Visualization cleaned successfully", 200, result);
-  } catch (error) {
-    throw new AppError("Failed to Clean Visualization", 500);
-  } finally {
-    client.end();
-  }
-};
+ 
+     // Generate the Orbit content
+     const orbitContent = Orbit.generateOrbitTag(
+       latitude, longitude, bearing, elevation
+     );
+ 
+     // Build the KML file locally
+     const localPath = await buildOrbit(orbitContent);
+ 
+     // Connect to SFTP and upload the file
+     await sftp.connect({ host, port, username, password });
+     await sftp.put(localPath, remoteKmlPath);
+   //   await new Promise((resolve, reject) => {
+   //     sftp.sftp((err, sftpSession) => {
+   //       if (err) return reject(new AppError('Failed to connect to SFTP', 500));
+ 
+   //       sftpSession.fastPut(localPath, remoteKmlPath, (err) => {
+   //         if (err) return reject(new AppError('Failed to upload KML file', 500));
+   //         console.log('KML file uploaded successfully');
+   //         resolve();
+   //       });
+   //     });
+   //   });
+ 
+     // Connect to SSH for command execution
+     await connectSSH(client, { host, port, username, password });
+ 
+     // Add KML URL to the list
+     await executeCommand(
+       client,
+       `echo "http://lg1:81/Orbit.kml" >> ${remoteKmlListPath}`
+     );
+ 
+     // Execute the flyto command
+     const command = 'echo "playtour=Orbit" > /tmp/query.txt';
+     const result = await executeCommand(client, command);
+ 
+     return new AppSuccess('Orbit executed successfully', 200, result);
+   } catch (error) {
+     console.error('Error executing Orbit:', error);
+     throw new AppError('Failed to execute orbit', 500);
+   } finally {
+     sftp.end();
+     client.end();
+   }
+ };
+
+export const cleanVisualizationService = async (host, port, username, password) => {
+   const client = new Client();
+   const sshPort = +port;
+   try {
+      await connectSSH(client, { host, sshPort, username, password });
+      const result = await executeCommand(client, "> /var/www/html/kmls.txt");
+      return new AppSuccess("Visualization cleaned successfully",200, result);
+   } catch (error) {
+      throw new AppError("Failed to Clean Visualization",500);
+   }
+   finally {
+      client.end();
+   }
+}
 
 export const cleanlogosService = async (
   host,
@@ -359,22 +435,16 @@ export const showBalloonService = async (
   }
 };
 
-export const sendKmlService = async (
-  host,
-  sshPort,
-  username,
-  password,
-  projectname,
-  localPath
-) => {
-  const sftp = new SSHClient();
-  const client = new Client();
-  const remoteKmlPath = `/var/www/html/${projectname}.kml`;
-  const remoteKmlListPath = `/var/www/html/kmls.txt`;
+export const sendKmlService = async (host, sshPort, username, password, projectname, localPath) => {
+   const sftp = new SSHClient();
+   const client = new Client();
+   const remoteKmlPath = `/var/www/html/${projectname}.kml`;
+   const remoteKmlListPath = `/var/www/html/kmls.txt`;
+   const port = +sshPort;
 
-  try {
-    // Connect to the SFTP server
-    await sftp.connect({ host, port: sshPort, username, password });
+   try {
+       // Connect to the SFTP server
+       await sftp.connect({ host, port, username, password });
 
     // Upload the KML file
     await sftp.put(localPath, remoteKmlPath);
