@@ -2,6 +2,9 @@
 
 The **LG Control Server** is a powerful and intuitive Node.js-based application for managing Liquid Galaxy (LG) systems via SSH. It offers a robust REST API to handle various LG operations, from visualizations to system management.
 
+![Server is Listening](https://github.com/user-attachments/assets/070f5d4d-4691-42f5-9479-cf6752d37edd)
+
+
 [**View Swagger API Docs**](https://rohit-554.github.io/LgServerSwaggerApi/#/)
 
 ---
