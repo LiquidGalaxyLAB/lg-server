@@ -38,27 +38,31 @@ The **LG Control Server** is a powerful and intuitive Node.js-based application 
    npm install
    ```
 
-3. **Set up HTTPS with `mkcert`**:  
-   Install `mkcert` (follow [this guide](https://github.com/FiloSottile/mkcert)) and generate your SSL certificates:
+3. **Ngrok Setup Instructions**
+   - For executing the commands in the deployed front-end [application](https://yashrajbharti.github.io/lg-web/)
+### Prerequisites
+- A local server running on port 3000
 
-   ```bash
-   mkcert -install  
-   mkcert localhost <ip_address>
-   ```
+### Installation and Setup
+a. **Download and Install ngrok**
+   - Navigate to [ngrok downloads](https://download.ngrok.com/downloads/windows)
+   - Download and extract the ngrok executable to your preferred location
 
-   - Create a `certs` folder in the project root and place the generated `.key` and `.pem` files there.  
-   - [Learn more](https://zellwk.com/blog/serving-https-locally-with-node/). Rename them to cert.pem and key.pem as shown in the article.
+b. **Launch Tunnel**
+   - Open a new terminal window
+   - Execute the following command:
+     ```bash
+     ngrok http 3000
+     ```
+   - Verify the tunnel is active when you see the forwarding URL in the terminal
 
-4. **Install `RootCA.pem` on your device**:
+c. **Configure Frontend**
+   - Copy the HTTPS forwarding URL from the ngrok terminal
+     (Example: `https://a1b2c3d4.ngrok.io`)
+   - Update your frontend application's configuration with this URL
 
-   Find the `RootCA.pem` location:
-
-   ```bash
-   mkcert CAROOT
-   ```
-
-   Send the `RootCA.pem` file to your Android or iOS device, rename it with a `.crt` extension, and install it.
-
+  - Note
+    The ngrok terminal must remain open to maintain the tunnel connection. The free tier will generate a new URL each time you restart ngrok.
 ---
 
 ## 🚧 Project Structure
