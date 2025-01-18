@@ -224,7 +224,7 @@
 
         const qrcode = new QRCode("qrcode");
         const url = window.location.href
-        qrcode.makeCode(`{ "server": ${url}}`);
+        qrcode.makeCode(`{ "server": "${url}" }`);
     </script>
 </body>
 
