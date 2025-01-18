@@ -46,6 +46,14 @@ The **LG Control Server** is a powerful and intuitive Node.js-based application 
 ### Installation and Setup
 a. **Download and Install ngrok**
    - Navigate to [ngrok downloads](https://download.ngrok.com/downloads/windows)
+   - Macos
+     ```
+     brew install ngrok/ngrok/ngrok
+     ```
+   - Ubuntu
+     ```
+     sudo snap install ngrok
+     ```
    - Download and extract the ngrok executable to your preferred location
 
 b. **Launch Tunnel**
