@@ -1,8 +1,7 @@
 import express from "express";
 import { appRouter } from "../routers/index.js";
 import errorMiddleWare from "../middleware/error.middleware.js";
-import https from "https";
-import fs from "fs";
+import http from "http";
 import { WebSocketServer } from "ws";
 import path from "path";
 import cors from "cors";
@@ -11,16 +10,8 @@ export class Server {
   constructor(config) {
     this.config = config || {};
     this.app = express();
-
-    const key = fs.readFileSync(
-      path.join(process.cwd(), "certs", "key.pem"),
-      "utf8"
-    );
-    const cert = fs.readFileSync(
-      path.join(process.cwd(), "certs", "cert.pem"),
-      "utf8"
-    );
-    this.server = https.createServer({ key, cert }, this.app);
+    
+    this.server = http.createServer(this.app);
 
     this.wss = new WebSocketServer({ server: this.server });
 
@@ -55,13 +46,14 @@ export class Server {
   }
 
   start() {
-    const port = this.config.port || 443;
+    // Changed default port to 3000 since 80 requires root privileges
+    const port = this.config.port || 3000;
     this.server.listen(port, (err) => {
       if (err) {
         console.error(`Failed to start server: ${err.message}`);
         process.exit(1);
       } else {
-        console.log(`Server is running at https://localhost:${port}`);
+        console.log(`Server is running at http://localhost:${port}`);
       }
     });
   }
