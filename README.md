@@ -40,6 +40,7 @@ The **LG Control Server** is a powerful and intuitive Node.js-based application 
 
 3. **Ngrok Setup Instructions**
    - For executing the commands in the deployed front-end [application](https://yashrajbharti.github.io/lg-web/)
+     
 ### Prerequisites
 - A local server running on port 3000
 
@@ -47,14 +48,17 @@ The **LG Control Server** is a powerful and intuitive Node.js-based application 
 a. **Download and Install ngrok**
    - Navigate to [ngrok downloads](https://download.ngrok.com/downloads/windows)
    - Macos
-     ```
-     brew install ngrok/ngrok/ngrok
+     
+     ```bash
+     brew install ngrok
      ```
    - Ubuntu
-     ```
+     
+     ```bash
      sudo snap install ngrok
      ```
-   - Download and extract the ngrok executable to your preferred location
+   
+   - Download and extract the ngrok executable to your preferred location (windows)
 
 b. **Launch Tunnel**
    - Open a new terminal window
