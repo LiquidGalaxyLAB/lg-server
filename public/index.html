@@ -114,13 +114,50 @@
                 }
             }
         }
+
+        #qrcode {
+            inline-size: 256px;
+            block-size: 256px;
+            margin: auto;
+        }
+
+        ::backdrop {
+            background-color: #ffffff8a;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        button {
+            position: fixed;
+            inset-inline-end: 0;
+            inset-block-start: 0;
+            border: none;
+            background-color: #ffffff;
+            margin: 5px;
+            padding: 15px;
+        }
+
+        button svg {
+            cursor: pointer;
+        }
     </style>
+    <script src="./assets/qrcode.min.js"></script>
 </head>
 
 <body>
+    <button popovertarget="qrcode">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px"
+            fill="rgba(0, 0, 0, 0.87)">
+            <title>Open QR</title>
+            <path
+                d="M120-520v-320h320v320H120Zm80-80h160v-160H200v160Zm-80 480v-320h320v320H120Zm80-80h160v-160H200v160Zm320-320v-320h320v320H520Zm80-80h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z" />
+        </svg>
+    </button>
+    <div id="qrcode" popover></div>
     <h1 data-color="initial">
         <span><span>Listening</span><span>.</span><span>.</span><span>.</span></span>
     </h1>
+
     <script>
         const colorMap = new Map([
             ["Orbiting", "blue"],
@@ -184,6 +221,10 @@
         ws.onmessage = (event) => {
             if (event.data) changeText(textMap.get(event.data), colorMap.get(textMap.get(event.data)));
         };
+
+        const qrcode = new QRCode("qrcode");
+        const url = window.location.href
+        qrcode.makeCode(`{ "server": ${url}}`);
     </script>
 </body>
 
