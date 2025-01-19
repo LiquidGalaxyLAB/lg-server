@@ -79,14 +79,14 @@ export class LgConnectionController {
     }
   };
   cleanlogos = async (req, res, next) => {
-    const { ip, port, username, password, rigs } = req.body;
+    const { ip, port, username, password, screens } = req.body;
     try {
       const response = await cleanlogosService(
         ip,
         port,
         username,
         password,
-        rigs
+        screens
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -94,14 +94,14 @@ export class LgConnectionController {
     }
   };
   relaunchLG = async (req, res, next) => {
-    const { ip, port, username, password, rigs } = req.body;
+    const { ip, port, username, password, screens } = req.body;
     try {
       const response = await relaunchLGService(
         ip,
         port,
         username,
         password,
-        rigs
+        screens
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -109,14 +109,14 @@ export class LgConnectionController {
     }
   };
   shutdownLG = async (req, res, next) => {
-    const { ip, port, username, password, rigs } = req.body;
+    const { ip, port, username, password, screens } = req.body;
     try {
       const response = await shutdownLGService(
         ip,
         port,
         username,
         password,
-        rigs
+        screens
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -124,14 +124,14 @@ export class LgConnectionController {
     }
   };
   rebootLG = async (req, res, next) => {
-    const { ip, port, username, password, rigs } = req.body;
+    const { ip, port, username, password, screens } = req.body;
     try {
       const response = await rebootLGService(
         ip,
         port,
         username,
         password,
-        rigs
+        screens
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -148,14 +148,14 @@ export class LgConnectionController {
     }
   };
   cleanBalloon = async (req, res, next) => {
-    const { ip, port, username, password, rigs } = req.body;
+    const { ip, port, username, password, screens } = req.body;
     try {
       const response = await cleanBalloonService(
         ip,
         port,
         username,
         password,
-        rigs
+        screens
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -194,14 +194,14 @@ export class LgConnectionController {
   };
 
   showOverlayImage = async (req, res, next) => {
-    const { ip, port, username, password, rigs, kml } = req.body;
+    const { ip, port, username, password, screens, kml } = req.body;
     try {
       const response = await showOverlayImageService(
         ip,
         port,
         username,
         password,
-        rigs,
+        screens,
         kml
       );
       return res.status(200).json(response);
@@ -211,14 +211,14 @@ export class LgConnectionController {
   };
 
   showBallon = async (req, res, next) => {
-    const { ip, port, username, password, rigs, kml } = req.body;
+    const { ip, port, username, password, screens, kml } = req.body;
     try {
       const response = await showBalloonService(
         ip,
         port,
         username,
         password,
-        rigs,
+        screens,
         kml
       );
       return res.status(200).json(response);

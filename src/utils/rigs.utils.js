@@ -1,8 +1,8 @@
-export const defaultRigs = 3;
-export const leftMostRig = (rigs) => {
-  return Math.floor(parseInt(rigs, 10) / 2) + 2;
+export const defaultScreens = 3;
+export const leftMostScreen = (screens) => {
+  return Math.floor(parseInt(screens, 10) / 2) + 2;
 };
 
-export const rightMostRig = (rigs) => {
-  return Math.floor(rigs / 2) + 1;
+export const rightMostScreen = (screens) => {
+  return Math.floor(screens / 2) + 1;
 };

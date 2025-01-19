@@ -1,7 +1,11 @@
 import Client from "ssh2/lib/client.js";
 import SSHClient from "ssh2-sftp-client";
 import AppError from "../utils/error.utils.js";
-import { defaultRigs, leftMostRig, rightMostRig } from "../utils/rigs.utils.js";
+import {
+  defaultScreens,
+  leftMostScreen,
+  rightMostScreen,
+} from "../utils/screens.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
 import fs from "fs";
@@ -208,9 +212,9 @@ export const cleanlogosService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs
+  numberofscreens = defaultScreens
 ) => {
-  const leftmostrig = leftMostRig(numberofrigs);
+  const leftmostscreen = leftMostScreen(numberofscreens);
   const port = parseInt(sshPort, 10);
   const blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -218,7 +222,7 @@ export const cleanlogosService = async (
  </Document>
 </kml>`;
   const client = new Client();
-  const command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostrig}.kml`;
+  const command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostscreen}.kml`;
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(client, command);
@@ -235,14 +239,14 @@ export const relaunchLGService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs
+  numberofscreens = defaultScreens
 ) => {
   const client = new Client();
-  const rigs = parseInt(numberofrigs, 10);
+  const screens = parseInt(numberofscreens, 10);
   const port = parseInt(sshPort, 10);
 
   try {
-    for (let i = 1; i <= rigs; i++) {
+    for (let i = 1; i <= screens; i++) {
       await connectSSH(client, { host, port, username, password });
 
       const relaunchCommand = `
@@ -280,13 +284,13 @@ export const shutdownLGService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs
+  numberofscreens = defaultScreens
 ) => {
   const client = new Client();
-  const rigs = parseInt(numberofrigs, 10);
+  const screens = parseInt(numberofscreens, 10);
   const port = parseInt(sshPort, 10);
   try {
-    for (let i = 1; i <= rigs; i++) {
+    for (let i = 1; i <= screens; i++) {
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(
         client,
@@ -306,13 +310,13 @@ export const rebootLGService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs
+  numberofscreens = defaultScreens
 ) => {
   const client = new Client();
-  const rigs = parseInt(numberofrigs, 10);
+  const screens = parseInt(numberofscreens, 10);
   const port = parseInt(sshPort, 10);
   try {
-    for (let i = 1; i <= rigs; i++) {
+    for (let i = 1; i <= screens; i++) {
       await connectSSH(client, { host, port, username, password });
       const result = await executeCommand(
         client,
@@ -348,10 +352,10 @@ export const cleanBalloonService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs
+  numberofscreens = defaultScreens
 ) => {
   const client = new Client();
-  const rigs = parseInt(numberofrigs, 10);
+  const screens = parseInt(numberofscreens, 10);
   const port = parseInt(sshPort, 10);
   const blank = `<?xml version="1.0" encoding="UTF-8"?>
       <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -359,11 +363,11 @@ export const cleanBalloonService = async (
         </Document>
       </kml>`;
   try {
-    rigs = rightMostRig(rigs);
+    screens = rightMostScreen(screens);
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${blank}' > /var/www/html/kml/slave_${rigs}.kml`
+      `echo '${blank}' > /var/www/html/kml/slave_${screens}.kml`
     );
     return new AppSuccess("Balloon cleaned successfully", 200, result);
   } catch (error) {
@@ -411,17 +415,17 @@ export const showOverlayImageService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs,
+  numberofscreens = defaultScreens,
   overlayImage
 ) => {
   const client = new Client();
-  const leftmostrig = leftMostRig(numberofrigs);
+  const leftmostscreen = leftMostScreen(numberofscreens);
   const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${overlayImage}' > /var/www/html/kml/slave_${leftmostrig}.kml`
+      `echo '${overlayImage}' > /var/www/html/kml/slave_${leftmostscreen}.kml`
     );
     return new AppSuccess("Logo sent successfully", 200, result);
   } catch (error) {
@@ -436,17 +440,17 @@ export const showBalloonService = async (
   sshPort,
   username,
   password,
-  numberofrigs = defaultRigs,
+  numberofscreens = defaultScreens,
   balloon
 ) => {
   const client = new Client();
   const port = parseInt(sshPort, 10);
-  const rightmostrig = rightMostRig(numberofrigs);
+  const rightmostscreen = rightMostScreen(numberofscreens);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${balloon}' > /var/www/html/kml/slave_${rightmostrig}.kml`
+      `echo '${balloon}' > /var/www/html/kml/slave_${rightmostscreen}.kml`
     );
     return new AppSuccess("Balloon sent successfully", 200, result);
   } catch (error) {
