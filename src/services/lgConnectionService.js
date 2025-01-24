@@ -1,7 +1,7 @@
 import Client from "ssh2/lib/client.js";
 import SSHClient from "ssh2-sftp-client";
 import AppError from "../utils/error.utils.js";
-import { getLeftMostScreen, rightMostScreen } from "../utils/screen.utils.js";
+import { getLeftMostScreen, getRightMostScreen as getRightMostScreen } from "../utils/screen.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
 import fs from "fs";
@@ -359,11 +359,11 @@ export const cleanBalloonService = async (
         </Document>
       </kml>`;
   try {
-    screens = rightMostScreen(screens);
+    const rightMostScreen = getRightMostScreen(screens);
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${blank}' > /var/www/html/kml/slave_${screens}.kml`
+      `echo '${blank}' > /var/www/html/kml/slave_${rightMostScreen}.kml`
     );
     return new AppSuccess("Balloon cleaned successfully", 200, result);
   } catch (error) {
@@ -441,12 +441,12 @@ export const showBalloonService = async (
 ) => {
   const client = new Client();
   const port = parseInt(sshPort, 10);
-  const rightmostscreen = rightMostScreen(numberofscreens);
+  const rightMostScreen = getRightMostScreen(numberofscreens);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${balloon}' > /var/www/html/kml/slave_${rightmostscreen}.kml`
+      `echo '${balloon}' > /var/www/html/kml/slave_${rightMostScreen}.kml`
     );
     return new AppSuccess("Balloon sent successfully", 200, result);
   } catch (error) {
