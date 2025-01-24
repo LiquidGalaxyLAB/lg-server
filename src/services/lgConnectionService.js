@@ -1,11 +1,7 @@
 import Client from "ssh2/lib/client.js";
 import SSHClient from "ssh2-sftp-client";
 import AppError from "../utils/error.utils.js";
-import {
-  defaultScreens,
-  leftMostScreen,
-  rightMostScreen,
-} from "../utils/screens.utils.js";
+import { getLeftMostScreen, getRightMostScreen as getRightMostScreen } from "../utils/screen.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
 import fs from "fs";
@@ -214,7 +210,7 @@ export const cleanlogosService = async (
   password,
   numberofscreens = defaultScreens
 ) => {
-  const leftmostscreen = leftMostScreen(numberofscreens);
+  const leftMostScreen = getLeftMostScreen(numberofscreens);
   const port = parseInt(sshPort, 10);
   const blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -222,7 +218,7 @@ export const cleanlogosService = async (
  </Document>
 </kml>`;
   const client = new Client();
-  const command = `echo '${blank}' > /var/www/html/kml/slave_${leftmostscreen}.kml`;
+  const command = `echo '${blank}' > /var/www/html/kml/slave_${leftMostScreen}.kml`;
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(client, command);
@@ -363,11 +359,11 @@ export const cleanBalloonService = async (
         </Document>
       </kml>`;
   try {
-    screens = rightMostScreen(screens);
+    const rightMostScreen = getRightMostScreen(screens);
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${blank}' > /var/www/html/kml/slave_${screens}.kml`
+      `echo '${blank}' > /var/www/html/kml/slave_${rightMostScreen}.kml`
     );
     return new AppSuccess("Balloon cleaned successfully", 200, result);
   } catch (error) {
@@ -419,7 +415,7 @@ export const showOverlayImageService = async (
   overlayImage
 ) => {
   const client = new Client();
-  const leftmostscreen = leftMostScreen(numberofscreens);
+  const leftmostscreen = getLeftMostScreen(numberofscreens);
   const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
@@ -445,12 +441,12 @@ export const showBalloonService = async (
 ) => {
   const client = new Client();
   const port = parseInt(sshPort, 10);
-  const rightmostscreen = rightMostScreen(numberofscreens);
+  const rightMostScreen = getRightMostScreen(numberofscreens);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
       client,
-      `echo '${balloon}' > /var/www/html/kml/slave_${rightmostscreen}.kml`
+      `echo '${balloon}' > /var/www/html/kml/slave_${rightMostScreen}.kml`
     );
     return new AppSuccess("Balloon sent successfully", 200, result);
   } catch (error) {
