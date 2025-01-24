@@ -1,7 +1,7 @@
 import Client from "ssh2/lib/client.js";
 import SSHClient from "ssh2-sftp-client";
 import AppError from "../utils/error.utils.js";
-import { leftMostScreen, rightMostScreen } from "../utils/screen.utils.js";
+import { getLeftMostScreen, rightMostScreen } from "../utils/screen.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
 import fs from "fs";
@@ -210,7 +210,7 @@ export const cleanlogosService = async (
   password,
   numberofscreens = defaultScreens
 ) => {
-  const leftMostScreen = leftMostScreen(numberofscreens);
+  const leftMostScreen = getLeftMostScreen(numberofscreens);
   const port = parseInt(sshPort, 10);
   const blank = `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -415,7 +415,7 @@ export const showOverlayImageService = async (
   overlayImage
 ) => {
   const client = new Client();
-  const leftmostscreen = leftMostScreen(numberofscreens);
+  const leftmostscreen = getLeftMostScreen(numberofscreens);
   const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
