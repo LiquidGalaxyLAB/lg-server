@@ -1,231 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LG Server</title>
-    <meta name="description" content="A liquid galaxy web server">
-    <link rel="shortcut icon" href="./assets/lg.svg" type="image/x-icon">
+    <meta name="description" content="A liquid galaxy web server" />
+    <link rel="shortcut icon" href="./assets/lg.svg" type="image/x-icon" />
     <style>
-        @font-face {
-            font-family: "Product Sans";
-            src: url(./assets/ProductSans-Bold.ttf);
+      @font-face {
+        font-family: "Product Sans";
+        src: url(./assets/ProductSans-Bold.ttf);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        position: relative;
+        display: grid;
+        block-size: 100dvh;
+        place-items: center;
+        font-family: "Product Sans", sans-serif;
+        font-weight: bold;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1 {
+        position: relative;
+        display: inline-block;
+        font-size: clamp(2rem, 2rem + 4vw, 8rem);
+        text-transform: capitalize;
+        transition: all 0.4s ease;
+        color: rgb(103, 105, 110);
+      }
+
+      h1[data-color="initial"] {
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      h1[data-color="green"] {
+        color: rgb(30, 142, 62);
+      }
+
+      h1[data-color="blue"] {
+        color: rgb(26, 115, 232);
+      }
+
+      h1[data-color="red"] {
+        color: rgb(217, 48, 37);
+      }
+
+      h1[data-color="yellow"] {
+        color: rgb(249, 171, 0);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        h1::after {
+          position: absolute;
+          content: "";
+          block-size: 100%;
+          inline-size: 100%;
+          background-color: #ffffff;
+          inset-inline-start: 0;
+          inset-block-start: 99%;
+          z-index: 1;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        h1 span.animate {
+          display: inline-block;
+          animation: slideUp 0.6s ease;
         }
 
-        body {
-            position: relative;
-            display: grid;
-            block-size: 100dvh;
-            place-items: center;
-            font-family: "Product Sans", sans-serif;
-            font-weight: bold;
-            -webkit-font-smoothing: antialiased;
+        @keyframes slideUp {
+          0% {
+            translate: 0 100%;
+          }
+
+          100% {
+            translate: 0 0;
+          }
         }
 
-        h1 {
-            position: relative;
-            display: inline-block;
-            font-size: clamp(2rem, 2rem + 4vw, 8rem);
-            text-transform: capitalize;
-            transition: all 0.4s ease;
-            color: rgb(103, 105, 110);
+        h1 span > span:nth-of-type(2) {
+          display: inline-block;
+          animation: move 1.2s linear infinite both;
         }
 
-        h1[data-color="initial"] {
-            color: rgba(0, 0, 0, 0.87);
+        h1 span > span:nth-of-type(3) {
+          display: inline-block;
+          animation: move 1.2s linear 0.4s infinite both;
         }
 
-        h1[data-color="green"] {
-            color: rgb(30, 142, 62);
+        h1 span > span:nth-of-type(4) {
+          display: inline-block;
+          animation: move 1.2s linear 0.6s infinite both;
         }
 
-        h1[data-color="blue"] {
-            color: rgb(26, 115, 232);
+        @keyframes move {
+          0% {
+            translate: 0 0px;
+          }
+
+          50% {
+            translate: 0 -10px;
+          }
+
+          100% {
+            translate: 0 0px;
+          }
         }
+      }
 
-        h1[data-color="red"] {
-            color: rgb(217, 48, 37);
-        }
+      #qrcode {
+        inline-size: 256px;
+        block-size: 256px;
+        margin: auto;
+      }
 
-        h1[data-color="yellow"] {
-            color: rgb(249, 171, 0);
-        }
+      ::backdrop {
+        background-color: #ffffff8a;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+      }
 
-        @media (prefers-reduced-motion: no-preference) {
-            h1::after {
-                position: absolute;
-                content: "";
-                block-size: 100%;
-                inline-size: 100%;
-                background-color: #ffffff;
-                inset-inline-start: 0;
-                inset-block-start: 99%;
-                z-index: 1;
-            }
+      button {
+        position: fixed;
+        inset-inline-end: 0;
+        inset-block-start: 0;
+        border: none;
+        background-color: #ffffff;
+        margin: 5px;
+        padding: 15px;
+      }
 
-            h1 span.animate {
-                display: inline-block;
-                animation: slideUp 0.6s ease;
-            }
-
-            @keyframes slideUp {
-                0% {
-                    translate: 0 100%;
-                }
-
-                100% {
-                    translate: 0 0;
-                }
-            }
-
-            h1 span>span:nth-of-type(2) {
-                display: inline-block;
-                animation: move 1.2s linear infinite both;
-            }
-
-            h1 span>span:nth-of-type(3) {
-                display: inline-block;
-                animation: move 1.2s linear 0.4s infinite both;
-            }
-
-            h1 span>span:nth-of-type(4) {
-                display: inline-block;
-                animation: move 1.2s linear 0.6s infinite both;
-            }
-
-            @keyframes move {
-                0% {
-                    translate: 0 0px;
-                }
-
-                50% {
-                    translate: 0 -10px;
-                }
-
-                100% {
-                    translate: 0 0px;
-                }
-            }
-        }
-
-        #qrcode {
-            inline-size: 256px;
-            block-size: 256px;
-            margin: auto;
-        }
-
-        ::backdrop {
-            background-color: #ffffff8a;
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
-
-        button {
-            position: fixed;
-            inset-inline-end: 0;
-            inset-block-start: 0;
-            border: none;
-            background-color: #ffffff;
-            margin: 5px;
-            padding: 15px;
-        }
-
-        button svg {
-            cursor: pointer;
-        }
+      button svg {
+        cursor: pointer;
+      }
     </style>
     <script src="./assets/qrcode.min.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <button popovertarget="qrcode">
-        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px"
-            fill="rgba(0, 0, 0, 0.87)">
-            <title>Open QR</title>
-            <path
-                d="M120-520v-320h320v320H120Zm80-80h160v-160H200v160Zm-80 480v-320h320v320H120Zm80-80h160v-160H200v160Zm320-320v-320h320v320H520Zm80-80h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z" />
-        </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="48px"
+        viewBox="0 -960 960 960"
+        width="48px"
+        fill="rgba(0, 0, 0, 0.87)"
+      >
+        <title>Open QR</title>
+        <path
+          d="M120-520v-320h320v320H120Zm80-80h160v-160H200v160Zm-80 480v-320h320v320H120Zm80-80h160v-160H200v160Zm320-320v-320h320v320H520Zm80-80h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z"
+        />
+      </svg>
     </button>
     <div id="qrcode" popover></div>
     <h1 data-color="initial">
-        <span><span>Listening</span><span>.</span><span>.</span><span>.</span></span>
+      <span
+        ><span>Listening</span><span>.</span><span>.</span><span>.</span></span
+      >
     </h1>
 
     <script>
-        const colorMap = new Map([
-            ["Orbiting", "blue"],
-            ["Connecting", "blue"],
-            ["Closing", "red"],
-            ["Cleaning", "red"],
-            ["Relaunching", "yellow"],
-            ["Rebooting", "yellow"],
-            ["Flying", "green"],
-            ["Stopping", "red"],
-            ["Sending", "green"],
-        ]);
-        const textMap = new Map([
-            ["/api/lg-connection/connect-lg", "Connecting"],
-            ["/api/lg-connection/check-connection", "Silent"],
-            ["/api/lg-connection/flyto", "Flying"],
-            ["/api/lg-connection/execute-orbit", "Orbiting"],
-            ["/api/lg-connection/clean-visualization", "Cleaning"],
-            ["/api/lg-connection/clean-logos", "Cleaning"],
-            ["/api/lg-connection/relaunch-lg", "Relaunching"],
-            ["/api/lg-connection/reboot-lg", "Rebooting"],
-            ["/api/lg-connection/shutdown-lg", "Closing"],
-            ["/api/lg-connection/stop-orbit", "Stopping"],
-            ["/api/lg-connection/clean-balloon", "Cleaning"],
-            ["/api/lg-connection/send-kml", "Sending"],
-            ["/api/lg-connection/show-balloon", "Sending"],
-            ["/api/lg-connection/show-logo", "Sending"],
-        ]);
+      const colorMap = new Map([
+        ["Building", "blue"],
+        ["Orbiting", "blue"],
+        ["Connecting", "blue"],
+        ["Flying", "green"],
+        ["Sending", "green"],
+        ["Relaunching", "yellow"],
+        ["Rebooting", "yellow"],
+        ["Closing", "red"],
+        ["Cleaning", "red"],
+        ["Stopping", "red"],
+      ]);
+      const textMap = new Map([
+        ["/api/lg-connection/connect-lg", "Connecting"],
+        ["/api/lg-connection/check-connection", "Silent"],
+        ["/api/lg-connection/flyto", "Flying"],
+        ["/api/lg-connection/build-orbit", "Building"],
+        ["/api/lg-connection/start-orbit", "Orbiting"],
+        ["/api/lg-connection/clean-orbit", "Cleaning"],
+        ["/api/lg-connection/clean-visualization", "Cleaning"],
+        ["/api/lg-connection/clean-logos", "Cleaning"],
+        ["/api/lg-connection/relaunch-lg", "Relaunching"],
+        ["/api/lg-connection/reboot-lg", "Rebooting"],
+        ["/api/lg-connection/shutdown-lg", "Closing"],
+        ["/api/lg-connection/stop-orbit", "Stopping"],
+        ["/api/lg-connection/clean-balloon", "Cleaning"],
+        ["/api/lg-connection/send-kml", "Sending"],
+        ["/api/lg-connection/show-balloon", "Sending"],
+        ["/api/lg-connection/show-logo", "Sending"],
+      ]);
 
-        const changeText = (_text, _color) => {
-            if (_text === "Silent") return;
-            const heading = document.querySelector("h1");
-            const animate = heading.querySelector("span");
-            const text = animate.querySelector("span");
+      const changeText = (_text, _color) => {
+        if (_text === "Silent") return;
+        const heading = document.querySelector("h1");
+        const animate = heading.querySelector("span");
+        const text = animate.querySelector("span");
 
-            const DEFAULT_STATE = "initial";
-            const DEFAULT_TEXT = "listening";
+        const DEFAULT_STATE = "initial";
+        const DEFAULT_TEXT = "listening";
 
-            setTimeout(() => {
-                text.textContent = _text;
-                heading.dataset.color = _color;
-                animate.classList.add("animate");
-            }, 1000);
+        setTimeout(() => {
+          text.textContent = _text;
+          heading.dataset.color = _color;
+          animate.classList.add("animate");
+        }, 1000);
 
-            setTimeout(() => {
-                animate.classList.remove("animate");
-            }, 2200);
+        setTimeout(() => {
+          animate.classList.remove("animate");
+        }, 2200);
 
-            setTimeout(() => {
-                animate.classList.add("animate");
-                text.textContent = DEFAULT_TEXT;
-                heading.dataset.color = DEFAULT_STATE;
-            }, 3600);
+        setTimeout(() => {
+          animate.classList.add("animate");
+          text.textContent = DEFAULT_TEXT;
+          heading.dataset.color = DEFAULT_STATE;
+        }, 3600);
 
-            setTimeout(() => {
-                animate.classList.remove("animate");
-            }, 4800);
-        };
+        setTimeout(() => {
+          animate.classList.remove("animate");
+        }, 4800);
+      };
 
-        const ws = new WebSocket(`wss://${window.location.host}`);
-        ws.onmessage = (event) => {
-            if (event.data) changeText(textMap.get(event.data), colorMap.get(textMap.get(event.data)));
-        };
+      const ws = new WebSocket(`wss://${window.location.host}`);
+      ws.onmessage = (event) => {
+        if (event.data)
+          changeText(
+            textMap.get(event.data),
+            colorMap.get(textMap.get(event.data))
+          );
+      };
 
-        const qrcode = new QRCode("qrcode");
-        const url = window.location.href
-        qrcode.makeCode(`{ "server": "${url}" }`);
+      const qrcode = new QRCode("qrcode");
+      const url = window.location.href;
+      qrcode.makeCode(`{ "server": "${url}" }`);
     </script>
-</body>
-
+  </body>
 </html>

@@ -8,7 +8,9 @@ const upload = multer({ dest: "uploads/" });
 
 router.route("/check-connection").post(lgConnectionController.connectToLg);
 router.route("/connect-lg").post(lgConnectionController.connectToLg);
-router.route("/execute-orbit").post(lgConnectionController.executeOrbit);
+router.route("/build-orbit").post(lgConnectionController.buildOrbit);
+router.route("/start-orbit").post(lgConnectionController.startOrbit);
+router.route("/stop-orbit").post(lgConnectionController.stopOrbit);
 router
   .route("/clean-visualization")
   .post(lgConnectionController.cleanVisualization);
