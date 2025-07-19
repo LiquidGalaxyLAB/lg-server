@@ -1,7 +1,10 @@
 import Client from "ssh2/lib/client.js";
 import SSHClient from "ssh2-sftp-client";
 import AppError from "../utils/error.utils.js";
-import { getLeftMostScreen, getRightMostScreen as getRightMostScreen } from "../utils/screen.utils.js";
+import {
+  getLeftMostScreen,
+  getRightMostScreen,
+} from "../utils/screen.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
 import fs from "fs";
@@ -33,7 +36,7 @@ export const connectToLg = async (
     password
   );
   const client = new Client();
-  const port = +sshPort;
+  const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
     if (isCheckConnection) {
@@ -116,7 +119,7 @@ export const buildOrbit = async (content) => {
   }
 };
 
-export const executeOrbitService = async (
+export const buildOrbitService = async (
   host,
   sshPort,
   username,
@@ -133,7 +136,7 @@ export const executeOrbitService = async (
   const remoteKmlListPath = `/var/www/html/kmls.txt`;
 
   try {
-    const port = +sshPort;
+    const port = parseInt(sshPort, 10);
 
     // Generate the Orbit content
     const orbitContent = Orbit.generateOrbitTag(
@@ -149,17 +152,6 @@ export const executeOrbitService = async (
     // Connect to SFTP and upload the file
     await sftp.connect({ host, port, username, password });
     await sftp.put(localPath, remoteKmlPath);
-    //   await new Promise((resolve, reject) => {
-    //     sftp.sftp((err, sftpSession) => {
-    //       if (err) return reject(new AppError('Failed to connect to SFTP', 500));
-
-    //       sftpSession.fastPut(localPath, remoteKmlPath, (err) => {
-    //         if (err) return reject(new AppError('Failed to upload KML file', 500));
-    //         console.log('KML file uploaded successfully');
-    //         resolve();
-    //       });
-    //     });
-    //   });
 
     // Connect to SSH for command execution
     await connectSSH(client, { host, port, username, password });
@@ -170,16 +162,48 @@ export const executeOrbitService = async (
       `echo "http://lg1:81/Orbit.kml" >> ${remoteKmlListPath}`
     );
 
-    // Execute the flyto command
-    const command = 'echo "playtour=Orbit" > /tmp/query.txt';
-    const result = await executeCommand(client, command);
-
-    return new AppSuccess("Orbit executed successfully", 200, result);
+    return new AppSuccess("Orbit built successfully", 200, result);
   } catch (error) {
     console.error("Error executing Orbit:", error);
     throw new AppError("Failed to execute orbit", 500);
   } finally {
     sftp.end();
+    client.end();
+  }
+};
+
+export const startOrbitService = async (host, sshPort, username, password) => {
+  const client = new Client();
+  const port = parseInt(sshPort, 10);
+
+  try {
+    await connectSSH(client, { host, port, username, password });
+    // Execute the playtour command
+    const command = 'echo "playtour=Orbit" > /tmp/query.txt';
+    const result = await executeCommand(client, command);
+
+    return new AppSuccess("Orbit started successfully", 200, result);
+  } catch (error) {
+    throw new AppError("Failed to start orbit", 500);
+  } finally {
+    client.end();
+  }
+};
+
+export const cleanOrbitService = async (host, sshPort, username, password) => {
+  const client = new Client();
+  const port = parseInt(sshPort, 10);
+
+  try {
+    await connectSSH(client, { host, port, username, password });
+    // Execute the clean command
+    const command = 'echo "" > /tmp/query.txt';
+    const result = await executeCommand(client, command);
+
+    return new AppSuccess("Orbit cleaned successfully", 200, result);
+  } catch (error) {
+    throw new AppError("Failed to clean orbit", 500);
+  } finally {
     client.end();
   }
 };
@@ -385,7 +409,7 @@ export const flytoService = async (
   bearing
 ) => {
   const client = new Client();
-  const port = +sshPort;
+  const port = parseInt(sshPort, 10);
   try {
     await connectSSH(client, { host, port, username, password });
     const result = await executeCommand(
@@ -468,7 +492,7 @@ export const sendKmlService = async (
   const client = new Client();
   const remoteKmlPath = `/var/www/html/${projectname}.kml`;
   const remoteKmlListPath = `/var/www/html/kmls.txt`;
-  const port = +sshPort;
+  const port = parseInt(sshPort, 10);
 
   try {
     // Connect to the SFTP server

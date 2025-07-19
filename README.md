@@ -4,20 +4,19 @@ The **LG Control Server** is a powerful and intuitive Node.js-based application 
 
 ![Server is Listening](https://github.com/user-attachments/assets/070f5d4d-4691-42f5-9479-cf6752d37edd)
 
-
 [**View Swagger API Docs**](https://rohit-554.github.io/LgServerSwaggerApi/#/)
 
 ---
 
 ## 📝 Table of Contents
 
-1. [Getting Started](#getting-started)  
-2. [Project Structure](#project-structure)  
-3. [How to Run](#how-to-run)  
-4. [Adding a New Command](#adding-a-new-command)  
-5. [Endpoints](#endpoints)  
-6. [License](#license)  
-7. [Contributors](#contributors)  
+1. [Getting Started](#-getting-started)  
+2. [Project Structure](#-project-structure)  
+3. [How to Run](#️-how-to-run)  
+4. [Adding a New Command](#-adding-a-new-command)  
+5. [Endpoints](#-endpoints)  
+6. [License](#-license)  
+7. [Contributors](#-contributors)
 
 ---
 
@@ -40,41 +39,50 @@ The **LG Control Server** is a powerful and intuitive Node.js-based application 
 
 3. **Ngrok Setup Instructions**
    - For executing the commands in the deployed front-end [application](https://yashrajbharti.github.io/lg-web/)
-     
+
 ### Prerequisites
+
 - A local server running on port 3000
 
 ### Installation and Setup
+
 a. **Download and Install ngrok**
-   - Navigate to [ngrok downloads](https://download.ngrok.com/downloads/windows)
-   - Macos
-     
+
+- Navigate to [ngrok downloads](https://download.ngrok.com/downloads/windows)
+- Macos
+
      ```bash
      brew install ngrok
      ```
-   - Ubuntu
-     
+
+- Ubuntu
+
      ```bash
      sudo snap install ngrok
      ```
-   
-   - Download and extract the ngrok executable to your preferred location (windows)
+
+- Download and extract the ngrok executable to your preferred location (windows)
 
 b. **Launch Tunnel**
-   - Open a new terminal window
-   - Execute the following command:
+
+- Open a new terminal window
+- Execute the following command:
+
      ```bash
      ngrok http 3000
      ```
-   - Verify the tunnel is active when you see the forwarding URL in the terminal
+
+- Verify the tunnel is active when you see the forwarding URL in the terminal
 
 c. **Configure Frontend**
-   - Copy the HTTPS forwarding URL from the ngrok terminal
-     (Example: `https://a1b2c3d4.ngrok.io`)
-   - Update your frontend application's configuration with this URL
 
-  - Note
+- Copy the HTTPS forwarding URL from the ngrok terminal
+     (Example: `https://a1b2c3d4.ngrok.io`)
+- Update your frontend application's configuration with this URL
+
+- Note
     The ngrok terminal must remain open to maintain the tunnel connection. The free tier will generate a new URL each time you restart ngrok.
+
 ---
 
 ## 🚧 Project Structure
@@ -177,7 +185,9 @@ c. **Configure Frontend**
 | Endpoint                      | Method | Description                      |  
 |-------------------------------|--------|----------------------------------|  
 | `/ping`                       | GET    | Health check endpoint.           |  
-| `/api/execute-orbit`          | POST   | Executes an orbit command.       |  
+| `/api/build-orbit`            | POST   | Builds the orbit.                |
+| `/api/start-orbit`            | POST   | Starts the orbit.                |  
+| `/api/clean-orbit`            | POST   | Cleans the orbit.                |
 | `/api/clean-visualization`    | POST   | Cleans LG visualizations.        |  
 | `/api/clean-logos`            | POST   | Removes LG logos.                |  
 | `/api/relaunch-lg`            | POST   | Relaunches the LG system.        |  
@@ -198,9 +208,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ### Contributors
 
-<a href="https://github.com/LiquidGalaxyLAB/lg-server/graphs/contributors">  
-  <img src="https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server" />  
-</a>  
+[![Contributors](https://contrib.rocks/image?repo=LiquidGalaxyLAB/lg-server)](https://github.com/LiquidGalaxyLAB/lg-server/graphs/contributors)
 
 ### Backend Developer
 

@@ -7,7 +7,9 @@ import {
   rebootLGService,
   cleanBalloonService,
   stopOrbitService,
-  executeOrbitService,
+  startOrbitService,
+  buildOrbitService,
+  cleanOrbitService,
   flytoService,
   showOverlayImageService,
   showBalloonService,
@@ -34,7 +36,7 @@ export class LgConnectionController {
     }
   };
 
-  executeOrbit = async (req, res, next) => {
+  buildOrbit = async (req, res, next) => {
     const {
       ip,
       port,
@@ -47,7 +49,7 @@ export class LgConnectionController {
       bearing,
     } = req.body;
     try {
-      const connections = await executeOrbitService(
+      const connections = await buildOrbitService(
         ip,
         port,
         username,
@@ -61,9 +63,32 @@ export class LgConnectionController {
       return res.status(200).json(connections);
     } catch (error) {
       console.log("error", error);
-      return next(new AppError(error || "Failed to execute orbit", 500));
+      return next(new AppError(error || "Failed to build orbit", 500));
     }
   };
+
+  startOrbit = async (req, res, next) => {
+    const { ip, port, username, password } = req.body;
+    try {
+      const connections = await startOrbitService(ip, port, username, password);
+      return res.status(200).json(connections);
+    } catch (error) {
+      console.log("error", error);
+      return next(new AppError(error || "Failed to start orbit", 500));
+    }
+  };
+
+  cleanOrbit = async (req, res, next) => {
+    const { ip, port, username, password } = req.body;
+    try {
+      const connections = await cleanOrbitService(ip, port, username, password);
+      return res.status(200).json(connections);
+    } catch (error) {
+      console.log("error", error);
+      return next(new AppError(error || "Failed to clean orbit", 500));
+    }
+  };
+
   cleanVisualization = async (req, res, next) => {
     const { ip, port, username, password } = req.body;
     try {
@@ -78,6 +103,7 @@ export class LgConnectionController {
       return next(new AppError(error || "Failed to Clean Visualization", 500));
     }
   };
+
   cleanlogos = async (req, res, next) => {
     const { ip, port, username, password, screens } = req.body;
     try {
@@ -93,6 +119,7 @@ export class LgConnectionController {
       return next(new AppError(error || "Failed to Clean Logo", 500));
     }
   };
+
   relaunchLG = async (req, res, next) => {
     const { ip, port, username, password, screens } = req.body;
     try {
@@ -108,6 +135,7 @@ export class LgConnectionController {
       return next(new AppError(error || "Failed to Re-launch LG ", 500));
     }
   };
+
   shutdownLG = async (req, res, next) => {
     const { ip, port, username, password, screens } = req.body;
     try {
@@ -123,6 +151,7 @@ export class LgConnectionController {
       return next(new AppError(error || "Failed to Shutdown LG ", 500));
     }
   };
+
   rebootLG = async (req, res, next) => {
     const { ip, port, username, password, screens } = req.body;
     try {
@@ -138,6 +167,7 @@ export class LgConnectionController {
       return next(new AppError(error || "Failed to reboot LG", 500));
     }
   };
+
   stopOrbit = async (req, res, next) => {
     const { ip, port, username, password } = req.body;
     try {
@@ -147,6 +177,7 @@ export class LgConnectionController {
       return next(new AppError(error || "Failed to Stop Orbit ", 500));
     }
   };
+
   cleanBalloon = async (req, res, next) => {
     const { ip, port, username, password, screens } = req.body;
     try {
