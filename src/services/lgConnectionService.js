@@ -3,7 +3,7 @@ import SSHClient from "ssh2-sftp-client";
 import AppError from "../utils/error.utils.js";
 import {
   getLeftMostScreen,
-  getRightMostScreen as getRightMostScreen,
+  getRightMostScreen,
 } from "../utils/screen.utils.js";
 import { lookAtLinear } from "../utils/lookat.utils.js";
 import AppSuccess from "../utils/success.utils.js";
