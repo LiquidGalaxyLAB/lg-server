@@ -157,7 +157,7 @@ export const buildOrbitService = async (
     await connectSSH(client, { host, port, username, password });
 
     // Add KML URL to the list
-    await executeCommand(
+    const result = await executeCommand(
       client,
       `echo "http://lg1:81/Orbit.kml" >> ${remoteKmlListPath}`
     );
